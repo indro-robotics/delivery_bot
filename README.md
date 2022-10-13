@@ -19,3 +19,6 @@ sudo apt install ros-$ROS_DISTRO-rtabmap ros-$ROS_DISTRO-rtabmap-ros
 
 
 roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start" depth_topic:=/cam_front/aligned_depth_to_color/image_raw rgb_topic:=/cam_front/color/image_raw camera_info_topic:=/cam_front/color/camera_info approx_sync:=false frame_id:=/base_link rviz:=true rtabmapviz:=false
+
+
+roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start" depth_topic:=/cam_rear/aligned_depth_to_color/image_raw rgb_topic:=/cam_rear/color/image_raw camera_info_topic:=/cam_rear/color/camera_info approx_sync:=false frame_id:=/base_link rviz:=true rtabmapviz:=false
