@@ -13,3 +13,9 @@ For running RTABMap on the Robot, install the RTABMAP and RTABMAP ROS packages:
 sudo apt install ros-$ROS_DISTRO-rtabmap ros-$ROS_DISTRO-rtabmap-ros
 ```
 **The debian package for RTABMAP-ROS does not support multi-camera RGB parsing and syncing, need to install from source which is not suppported well on Jetson Nano **
+
+
+
+
+
+roslaunch rtabmap_ros rtabmap.launch rtabmap_args:="--delete_db_on_start" depth_topic:=/cam_front/aligned_depth_to_color/image_raw rgb_topic:=/cam_front/color/image_raw camera_info_topic:=/cam_front/color/camera_info approx_sync:=false frame_id:=/base_link rviz:=true rtabmapviz:=false
