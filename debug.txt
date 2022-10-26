@@ -1,0 +1,6 @@
+IF When building rtabmap_ros --> Error:
+/usr/include/pcl-1.8/pcl/kdtree/kdtree_flann.h:230:29: error: field ‘param_k_’ has incomplete type ‘flann::SearchParams’
+       ::flann::SearchParams param_k_;
+       
+Replace file /usr/include/pcl-1.8/pcl/kdtree/kdtree_flann.h with:
+https://pastebin.com/38spwRxk
