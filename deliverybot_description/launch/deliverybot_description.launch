@@ -1,9 +1,0 @@
-<launch>
-    <!--Loading the created URDF file into the parameter server-->
-    <param name="deliverybot_description" textfile="$(find deliverybot_description)/urdf/deliverybot.urdf"/>
-
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub" >
-        <remap from="robot_description" to="deliverybot_description" />
-        <remap from="joint_states" to="different_joint_states" />
-    </node>
-</launch>

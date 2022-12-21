@@ -1,0 +1,82 @@
+<robot name="eva">
+    <link name="base_link">
+        <visual>
+            <geometry> 
+            <mesh filename="package://deliverybot_description/models/EVA_Body.dae"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 .5"/>
+        </visual>
+    </link>
+    <link name="fl_tire">
+        <visual>
+            <geometry>
+                <mesh filename="package://deliverybot_description/models/EVA_Wheel.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="fr_tire">
+        <visual>
+            <geometry>
+                <mesh filename="package://deliverybot_description/models/EVA_Wheel.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="bl_tire">
+        <visual>
+            <geometry>
+                <mesh filename="package://deliverybot_description/models/EVA_Wheel.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="br_tire">
+        <visual>
+            <geometry>
+                <mesh filename="package://deliverybot_description/models/EVA_Wheel.dae"/>
+            </geometry>
+        </visual>
+    </link>
+    <link name="door">
+        <visual>
+            <geometry>
+                <mesh filename="package://deliverybot_description/models/EVA_Lid.dae" />
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 .425 0" />
+        </visual>
+        
+    </link>
+
+
+
+    <joint name="fl_tire_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="fl_tire"/>
+        <origin xyz="-0.25 0.3 0.125" rpy="0 0 0" />
+    </joint>
+
+    <joint name="fr_tire_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="fr_tire" />
+        <origin xyz="0.25 0.3 0.125" rpy="0 0 3.14" />
+    </joint>
+
+    <joint name="bl_tire_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="bl_tire" />
+        <origin xyz="-0.25 -0.3 0.125" rpy="0 0 0" />
+    </joint>
+
+    <joint name="br_tire_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="br_tire" />
+        <origin xyz="0.25 -0.3 0.125" rpy="0 0 3.14" />
+    </joint>
+
+    <joint name="door_link" type="revolute">
+        <limit lower="0" upper="1.57" effort="0" velocity="0.785" />
+        <origin rpy="0 0 0" xyz="0 -0.4375 .825" />
+        <parent link="base_link" />
+        <child link="door" />
+    </joint>
+    
+
+</robot>

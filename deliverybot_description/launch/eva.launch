@@ -1,0 +1,33 @@
+<launch>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true" />
+        <arg name="gui" value="true" />
+        <arg name="recording" value="false" />
+        <arg name="debug" value="false" />
+    </include>
+
+    <arg name="x" default="0" />
+    <arg name="y" default="0" />
+    <arg name="z" default="0" />
+    <arg name="roll" default="0" />
+    <arg name="pitch" default="0" />
+    <arg name="yaw" default="0" />
+
+    <!--Loading the created URDF file into the parameter server-->
+    <param name="robot_description" command="cat $(find deliverybot_description)/urdf/eva_mesh.urdf"/>
+    
+    <!-- Launching the rboot state publisher -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="rob_st_pub" />
+    
+    <!-- Launching the joint state publisher -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    
+    <!-- Launching RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find deliverybot_description)/rviz/eva_config.rviz"/>
+    
+    <!-- Launching EVA into Gazebo -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model eva -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)" />
+
+</launch>
