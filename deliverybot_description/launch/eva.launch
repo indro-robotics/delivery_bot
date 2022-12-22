@@ -1,5 +1,4 @@
 <launch>
-
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true" />
@@ -7,13 +6,23 @@
         <arg name="recording" value="false" />
         <arg name="debug" value="false" />
     </include>
-
     <arg name="x" default="0" />
     <arg name="y" default="0" />
     <arg name="z" default="0" />
     <arg name="roll" default="0" />
     <arg name="pitch" default="0" />
     <arg name="yaw" default="0" />
+
+
+    <!-- FOR THE ACKERMAN STEERING MODULES -->
+    <!-- Load joint controller configuration from YAML File to parameter server -->
+    <rosparam file="$(find deliverybot_description)/config/ack_control.yaml" command="load" />
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/ack" 
+        args="joint_rwh_position_controller joint_lwh_position_controller 
+        joint_state_controller joint_rw_velocity_controller joint_lw_velocity_controller"/>
+    
 
     <!--Loading the created URDF file into the parameter server-->
     <param name="robot_description" command="cat $(find deliverybot_description)/urdf/eva_mesh.urdf"/>
@@ -29,5 +38,4 @@
     
     <!-- Launching EVA into Gazebo -->
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf -param robot_description -model eva -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)" />
-
 </launch>

@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   urdf
   xacro
+  std_msgs
+  genmsg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -136,8 +138,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/deliverybot_description_node.cpp)
 
+add_executable(deliverybot_description src/twist_to_ackermann.cpp)
+target_link_libraries(deliverybot_description ${catkin_LIBRARIES})
+##add_dependencies(deliverybot_description ack_gazebo_generate_messages_cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
