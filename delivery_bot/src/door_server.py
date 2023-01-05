@@ -39,7 +39,7 @@ class door_Control:
         service = rospy.Service('/door_control', door, self.handle_door_control)
 
         #INITIALIZING SERIAL TIMERS
-        self.doorPos_timer = rospy.Timer(rospy.Duration(0.1), self.doorPos_timer_callback)
+        self.doorPos_timer = rospy.Timer(rospy.Duration(2), self.doorPos_timer_callback)
         self.doorLatch_timer = rospy.Timer(rospy.Duration(0.15), self.doorLatch_timer_callback)
     
     def handle_door_control(self,cmd):
@@ -60,12 +60,12 @@ class door_Control:
             while True:
                 if self.doorPos_flag == 3:
                     self.doorPos_flag = 1
-                    if self.doorPos == 'fe020101505c':
+                    if self.doorPos == 'fe02010c9199c':
                         rospy.loginfo('Door closed, opening...')
                         self.open(serial_interface)
                         break
 
-                    elif self.doorPos == 'fe020102105d':
+                    elif self.doorPos == 'fe020103d19d':
                         rospy.loginfo('Door open, closing...')
                         self.close(serial_interface)
                         break
@@ -83,7 +83,7 @@ class door_Control:
         while True:
             if self.doorLatch_flag == 3:
                 GPIO.output(self.IN1, GPIO.HIGH)
-                if self.doorPos =='fe020102105d':
+                if self.doorPos =='fe020103d19d':
                     GPIO.output(self.IN1, GPIO.LOW)
                     rospy.loginfo('Door is fully open\n')
                     self.doorPos_flag = 0
@@ -101,7 +101,7 @@ class door_Control:
         while True:
             if self.doorLatch_flag == 3:
                 GPIO.output(self.IN2, GPIO.HIGH)
-                if self.doorPos =='fe020101505c':
+                if self.doorPos =='fe02010c9199c':
                     GPIO.output(self.IN2, GPIO.LOW)
                     rospy.loginfo('Door is fully closed\n')
                     self.doorPos_flag = 0
