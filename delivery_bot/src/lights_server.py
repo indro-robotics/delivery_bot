@@ -27,13 +27,16 @@ class light_Control():
         self.light_queue_command = 0
         self.light_start = 0 #LIGHT NUMBERING: BL=0 BR=1 FL=2 FR=3
         self.light_condition = 0 #0 = lights off 1 = lights on
+        self.light_data = Int16()
         self.toggle_Flag = 0
 
         #INITIALIZING THE SERVER
 
         service = rospy.Service('/light_control', door, self.handle_light_control)
 
-        self.lights_timer = rospy.Timer(rospy.Duration(0.025), self.lights_timer_callback)
+        self.lightCond_pub = rospy.Publisher('/light_Cond',Int16, queue_size = 1)
+
+        self.lights_timer = rospy.Timer(rospy.Duration(0.03), self.lights_timer_callback)
     def handle_light_control(self,cmd):
         if cmd.command == 1: #If Lights are set to be toggled
             self.light_queue_command += 1
@@ -49,9 +52,10 @@ class light_Control():
         self.serial_interface = serial_interface
         if self.light_handle_flag == 1 and self.light_queue_command == 1:
             self.toggle_Flag = 1
-            #self.light_start = 0
+
 
     def lights_timer_callback(self,event):
+        self.lightCond_pub.publish(self.light_condition)
         if self.toggle_Flag == 1:
             if self.light_condition == 0: #Want to turn the lights on
                 if self.light_start == 0:
@@ -77,14 +81,13 @@ class light_Control():
                     rospy.loginfo('Lights toggled on.')
                     return
 
-
             if self.light_condition == 1:
                 if self.light_start == 0:
-                    self.serial_interface.write(bytearray.fromhex(self.BL_off))
+                    #self.serial_interface.write(bytearray.fromhex(self.BL_off))
                     self.light_start = 1
                     return
                 if self.light_start == 1:
-                    self.serial_interface.write(bytearray.fromhex(self.BR_off))
+                    #self.serial_interface.write(bytearray.fromhex(self.BR_off))
                     self.light_start = 2
                     return
                 if self.light_start == 2:
@@ -102,5 +105,3 @@ class light_Control():
 
                     rospy.loginfo('Lights toggled off.')
                     return
-                
-                return
