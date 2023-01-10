@@ -12,17 +12,17 @@ class signal_Control():
     def __init__(self):
         
         #INITIALIZING SERIAL 
-        self.RR_on = 'FE 05 00 02 FF 00 39 F5'
-        self.RR_off = 'FE 05 00 02 00 00 78 05'
+        self.BL_on = 'FE 05 00 02 FF 00 39 F5'
+        self.BL_off = 'FE 05 00 02 00 00 78 05'
 
-        self.RL_on = 'FE 05 00 03 FF 00 68 35'
-        self.RL_off = 'FE 05 00 03 00 00 29 C5'
+        self.BR_on = 'FE 05 00 03 FF 00 68 35'
+        self.BR_off = 'FE 05 00 03 00 00 29 C5'
 
-        self.FR_on = 'FE 05 00 04 FF 00 D9 F4'
-        self.FR_off = 'FE 05 00 04 00 00 98 04'
+        self.FL_on = 'FE 05 00 04 FF 00 D9 F4'
+        self.FL_off = 'FE 05 00 04 00 00 98 04'
 
-        self.FL_on = 'FE 05 00 05 FF 00 88 34'
-        self.FL_off = 'FE 05 00 05 00 00 C9 C4'
+        self.FR_on = 'FE 05 00 05 FF 00 88 34'
+        self.FR_off = 'FE 05 00 05 00 00 C9 C4'
         self.cmd_vel = Twist()
         self.hunter_status = HunterStatus()
 

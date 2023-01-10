@@ -37,6 +37,9 @@ class door_Control:
         self.Latch_count = 0
         self.in_progFlag = 0
 
+        #CLOSING THE DOOR FROM START
+        #GPIO.output(self.IN2, GPIO.HIGH)
+
         #INITIALIZING THE SERVER
         service = rospy.Service('/door_control', door, self.handle_door_control)
 
