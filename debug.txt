@@ -4,16 +4,3 @@ IF When building rtabmap_ros --> Error:
        
 Replace file /usr/include/pcl-1.8/pcl/kdtree/kdtree_flann.h with:
 https://pastebin.com/38spwRxk
-
-
-[Interface]
-Address = 10.13.13.41
-PrivateKey = GDAMd073O89CBFuHjjoBtijpAGjFSYCrVX3Kyr+JUm0=
-ListenPort = 51820
-DNS = 10.13.13.1
-
-[Peer]
-PublicKey = XnenyRwhwFL5nV66JF2UQw1T6yLybLosXJ9PQY4KiXE=
-Endpoint = 174.138.114.32:51820
-AllowedIPs = 10.13.13.0/24
-PersistentKeepalive = 25
