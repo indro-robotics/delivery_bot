@@ -60,7 +60,7 @@ class door_Control:
 
         #INITIALIZING SERIAL TIMERS
         self.doorPos_timer = rospy.Timer(rospy.Duration(0.5), self.doorPos_timer_callback)
-        self.lights_timer = rospy.Timer(rospy.Duration(0.025), self.startup_lights_timer_callback)
+        self.lights_timer = rospy.Timer(rospy.Duration(0.03), self.startup_lights_timer_callback)
         self.startup_timer = rospy.Timer(rospy.Duration(0.5), self.startup_timer_callback)
     
     def handle_door_control(self,cmd):
@@ -179,6 +179,5 @@ class door_Control:
                 self.boot_complete_flag = 0
                 self.boot_count = 0
                 rospy.loginfo('BOOT COMPLETE')
-                return
-
-
+                self.toggle_Flag = 1
+                return self.toggle_Flag
