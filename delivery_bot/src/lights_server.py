@@ -22,7 +22,7 @@ class light_Control():
         self.FR_off = 'FE 05 00 05 00 00 C9 C4'
 
         #SETTING FLAGS
-        self.light_handle_flag = 1
+        self.light_handle_flag = 0
         self.light_queue_command = 0
         self.light_start = 0 #LIGHT NUMBERING: BL=0 BR=1 FL=2 FR=3
         self.light_condition = 0 #0 = lights off 1 = lights on
