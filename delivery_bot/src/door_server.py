@@ -18,6 +18,7 @@ class door_Control:
         self.IN2 = 23
         self.curr_IN1 = GPIO.LOW
         self.curr_IN2 = GPIO.LOW
+        self.ENABLE = 27
         self.open_flag = 0
         self.close_flag = 0
 
@@ -25,7 +26,8 @@ class door_Control:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.IN1, GPIO.OUT, initial=GPIO.LOW)
-        GPIO.setup(self.IN2, GPIO.OUT, initial=GPIO.LOW)
+        GPIO.setup(self.IN2, GPIO.OUT, initial=GPIO.LOW) 
+        GPIO.setup(self.ENABLE, GPIO.OUT, initial= GPIO.HIGH)
 
         #SETTING SERIAL PARAMETERS
         self.handle_flag = 0
@@ -37,14 +39,32 @@ class door_Control:
         self.Latch_count = 0
         self.in_progFlag = 0
 
-        #CLOSING THE DOOR FROM START
+        self.boot_complete_flag = 0
+        self.boot_count = 0
+        self.boot_handle_flag = 0
         #GPIO.output(self.IN2, GPIO.HIGH)
+        self.startup_flag = 1
+        self.startup_count = 0
+
+        #CLOSING THE DOOR FROM START
+        GPIO.output(self.IN2, GPIO.HIGH)
+
+        #SETTING LIGHT VARIABLES
+        self.FL_on = 'FE 05 00 04 FF 00 D9 F4'
+        self.FL_off = 'FE 05 00 04 00 00 98 04'
+
+        self.FR_on = 'FE 05 00 05 FF 00 88 34'
+        self.FR_off = 'FE 05 00 05 00 00 C9 C4'
 
         #INITIALIZING THE SERVER
         service = rospy.Service('/door_control', door, self.handle_door_control)
 
         #INITIALIZING SERIAL TIMERS
         self.doorPos_timer = rospy.Timer(rospy.Duration(0.5), self.doorPos_timer_callback)
+        self.lights_timer = rospy.Timer(rospy.Duration(0.025), self.startup_lights_timer_callback)
+        self.startup_timer = rospy.Timer(rospy.Duration(0.5), self.startup_timer_callback)
+
+
         #self.doorLatch_timer = rospy.Timer(rospy.Duration(0.15), self.doorLatch_timer_callback)
     
     def handle_door_control(self,cmd):
@@ -63,14 +83,14 @@ class door_Control:
 
             self.serial_interface.write(bytearray.fromhex('FE 02 00 00 00 06 EC 07'))
             self.doorPos = self.serial_interface.readline().hex()
-            if self.doorPos == 'fe02010c9199':
+            if self.doorPos == 'fe02010c9199' or self.doorPos == 'fe020101505c' or self.doorPos == 'fe020104905f':
                 self.in_progFlag = 1
                 self.prev_state = 0 #0 = previously closed - 1 = previously open
                 rospy.loginfo('Door closed, opening...')
                 self.open(serial_interface)
                 return
 
-            elif self.doorPos == 'fe020103d19d':
+            elif self.doorPos == 'fe020103d19d' or self.doorPos == 'fe020102105d':
                 self.in_progFlag = 1
                 self.prev_state = 1 #0 = previously closed - 1 = previously open
                 rospy.loginfo('Door open, closing...')
@@ -93,44 +113,20 @@ class door_Control:
         GPIO.output(self.IN2, GPIO.HIGH)
         return
 
-    # def doorLatch_timer_callback(self,event):
-    #     if self.doorLatch_flag == 1: #If the request is to unlock the latch
-    #         self.Latch_count += 1
-    #         self.serial_interface.write(bytearray.fromhex('FE 05 00 00 FF 00 98 35'))
-    #         if self.Latch_count == 10:
-    #             self.doorLatch_flag = 3
-    #             self.Latch_count = 0
-    #             return
-    #     if self.doorLatch_flag == 2: #If the request is to lock the latch
-    #         self.Latch_count += 1
-    #         self.serial_interface.write(bytearray.fromhex('FE 05 00 00 00 00 D9 C5'))
-    #         if self.Latch_count == 10:
-    #             self.doorLatch_flag = 3
-    #             self.Latch_count = 0
-    #             return
-    #     if self.doorLatch_flag == 4: #If the request is to lock the latch
-    #         self.Latch_count += 1
-    #         self.serial_interface.write(bytearray.fromhex('FE 05 00 00 00 00 D9 C5'))
-    #         if self.Latch_count == 10:
-                
-    #             self.doorLatch_flag = 0 #0 = off, 1 = unlock, 2 = lock, 3 = complete
-    #             self.doorPos_flag = 0 #0 = off, 1 = continuous polling, 2 = batch polling
-    #             self.Pos_count = 0
-    #             self.Latch_count = 0
-
     def doorPos_timer_callback(self,event):
         if self.in_progFlag == 1:
             self.serial_interface.write(bytearray.fromhex('FE 02 00 00 00 06 EC 07'))
             self.doorPos = self.serial_interface.readline().hex()
 
-            if self.doorPos =='fe02010c9199' and self.prev_state == 1:
-                rospy.loginfo('Door is fully closed.')
-                GPIO.output(self.IN2, GPIO.LOW)
-                self.queue_command = 0
-                self.handle_flag = 0
-                self.in_progFlag = 0
-                self.prev_state = 0
-                return
+            if self.doorPos =='fe02010c9199' or self.doorPos=='fe020104905f':
+                if self.prev_state == 1:
+                    rospy.loginfo('Door is fully closed.')
+                    GPIO.output(self.IN2, GPIO.LOW)
+                    self.queue_command = 0
+                    self.handle_flag = 0
+                    self.in_progFlag = 0
+                    self.prev_state = 0
+                    return
             
             if self.doorPos == 'fe020103d19d' and self.prev_state == 0:
                 rospy.loginfo('Door is fully open.')
@@ -140,3 +136,77 @@ class door_Control:
                 self.in_progFlag = 0
                 self.prev_state = 1
                 return
+
+        if self.startup_flag == 1:
+            self.serial_interface.write(bytearray.fromhex('FE 02 00 00 00 06 EC 07'))
+            self.doorPos = self.serial_interface.readline().hex()
+            #print('Might be interfeering')
+            if self.doorPos =='fe02010c9199' or self.doorPos=='fe020104905f':
+                rospy.loginfo('Door is fully closed.')
+                GPIO.output(self.IN2, GPIO.LOW)
+                self.queue_command = 0
+                self.handle_flag = 0
+                self.startup_flag = 0
+                self.boot_complete_flag = 1
+                self.prev_state = 0
+                return
+
+    def startup_lights_timer_callback(self,event):
+        if self.boot_complete_flag == 1:
+            if self.boot_handle_flag == 1:
+                if self.light_condition == 0: #Want to turn the lights on
+                    if self.light_start == 0:
+                        #print('Trying to turn FL ON')
+                        self.serial_interface.write(bytearray.fromhex(self.FL_on))
+                        self.light_start = 1
+                        return
+                    # if self.light_start == 1:
+                    #     self.serial_interface.write(bytearray.fromhex(self.FR_on))
+                    #     self.light_start = 2
+                    #     return
+                    # if self.light_start == 2:
+                    #     self.serial_interface.write(bytearray.fromhex(self.FL_on))
+                    #     self.light_start = 3
+                    #     return
+                    if self.light_start == 1:
+                        #print('Trying to turn FR ON')
+                        self.serial_interface.write(bytearray.fromhex(self.FR_on))
+                        self.light_start = 0
+                        self.toggle_Flag = 0
+                        self.light_condition = 1
+                        return
+                if self.light_condition == 1:
+                    if self.light_start == 0:
+                        #print('Trying to turn FL OFF')
+                        self.serial_interface.write(bytearray.fromhex(self.FL_off))
+                        self.light_start = 1
+                        return
+                    # if self.light_start == 1:
+                    #     self.serial_interface.write(bytearray.fromhex(self.BR_off))
+                    #     self.light_start = 2
+                    #     return
+                    # if self.light_start == 2:
+                    #     self.serial_interface.write(bytearray.fromhex(self.FL_off))
+                    #     self.light_start = 3
+                    #     return
+                    if self.light_start == 1:
+                        #print('Trying to turn FR OFF')
+                        self.serial_interface.write(bytearray.fromhex(self.FR_off))
+                        self.light_start = 0
+                        self.light_condition = 0
+                        self.boot_handle_flag = 0
+                        return
+    def startup_timer_callback(self,event):
+        if self.boot_complete_flag == 1:
+            #print(self.boot_count)
+            if self.boot_count < 6:
+                self.boot_handle_flag = 1
+                self.boot_count += 1
+                return
+            if self.boot_count == 6:
+                self.boot_complete_flag = 0
+                self.boot_count = 0
+                rospy.loginfo('BOOT COMPLETE')
+                return
+
+

@@ -36,8 +36,10 @@ class light_Control():
 
         self.lightCond_pub = rospy.Publisher('/light_Cond',Int16, queue_size = 1)
 
-        self.lights_timer = rospy.Timer(rospy.Duration(0.03), self.lights_timer_callback)
+        self.lights_timer = rospy.Timer(rospy.Duration(0.025), self.lights_timer_callback)
+        #self.startup_timer = rospy.Timer(rospy.Duration(0.25), self.startup_timer_callback)
     def handle_light_control(self,cmd):
+        self.light_queue_command = 0
         if cmd.command == 1: #If Lights are set to be toggled
             self.light_queue_command += 1
             self.light_handle_flag = 1
@@ -76,7 +78,7 @@ class light_Control():
                     self.toggle_Flag = 0
                     self.light_condition = 1
 
-                    self.light_queue_command = 0
+                    #self.light_queue_command = 0
                     self.light_handle_flag = 0
                     rospy.loginfo('Lights toggled on.')
                     return
@@ -100,7 +102,7 @@ class light_Control():
                     self.toggle_Flag = 0
                     self.light_condition = 0
 
-                    self.light_queue_command = 0
+                    #self.light_queue_command = 0
                     self.light_handle_flag = 0
 
                     rospy.loginfo('Lights toggled off.')

@@ -12,6 +12,8 @@ from door_server import door_Control
 from signal_control import signal_Control
 from lights_server import light_Control
 
+serial_interface = serial.Serial('/dev/ttyUSB0', 9600, timeout=0.05, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
+
 class deliveryBot(door_Control, signal_Control, light_Control):
     def __init__(self):
         #INITIALIZING THE SERIAL INTERFACE

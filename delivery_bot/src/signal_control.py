@@ -149,7 +149,7 @@ class signal_Control():
             return
     
     def brake_timer_callback(self,event):
-        if self.cmd_vel.linear.x <= 0: #If robot is stationary or reversing
+        if self.cmd_vel.linear.x == 0: #If robot is stationary or reversing
             if self.lightCond == 0 and self.brake_count == 0: #If the lights are turned off
                 if self.light_start == 0:
                     self.serial_interface.write(bytearray.fromhex(self.BL_on))
@@ -164,7 +164,7 @@ class signal_Control():
             if self.lightCond == 1:
                 self.brake_count = 0
                 return
-        if self.cmd_vel.linear.x > 0:
+        if self.cmd_vel.linear.x != 0:
             if self.lightCond == 0 and self.brake_count == 1:
                 if self.light_start == 0:
                     self.serial_interface.write(bytearray.fromhex(self.BL_off))
