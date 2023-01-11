@@ -41,8 +41,6 @@ class signal_Control():
         self.brake_count = 0
         self.light_start = 0 #0 = BL 1 = BR
 
-
-
         self.cmdVel_sub = rospy.Subscriber('/cmd_vel', Twist, self.cmdVel_callback)
         self.hunterStatus_sub = rospy.Subscriber('/hunter_status', HunterStatus, self.hunterStatus_callback)
         self.lightCond_sub = rospy.Subscriber('/light_Cond', Int16, self.lightCond_callback)
@@ -51,8 +49,6 @@ class signal_Control():
         self.signals_timer = rospy.Timer(rospy.Duration(0.025), self.signals_timer_callback)
         self.left_light_timer = rospy.Timer(rospy.Duration(0.5), self.left_light_timer_callback)
         self.right_light_timer = rospy.Timer(rospy.Duration(0.5), self.right_light_timer_callback)
-        #self.stop_sigs_timer = rospy.Timer(rospy.Duration(0.05), self.stop_sigs_callback)
-
         self.brake_timer = rospy.Timer(rospy.Duration(0.03), self.brake_timer_callback)
 
     def hunterStatus_callback(self, msg):
@@ -120,7 +116,6 @@ class signal_Control():
                     return self.off_count
 
     def left_light_timer_callback(self,event):
-        #Turning left signals on
         if self.left_signal_flag ==1:
             if self.lightON == 0: #If light is off
                 self.serial_interface.write(bytearray.fromhex(self.FL_on)) #Turn it on
