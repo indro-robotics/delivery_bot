@@ -3,7 +3,6 @@
 import rospy
 import serial.rs485
 import serial
-#serial_interface = serial.Serial('/dev/ttyUSB0', 9600, timeout=0.05, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
 from geometry_msgs.msg import Twist
 from hunter_msgs.msg import HunterStatus
 from std_msgs.msg import Int16
@@ -11,8 +10,6 @@ from std_msgs.msg import Int16
 from door_server import door_Control
 from signal_control import signal_Control
 from lights_server import light_Control
-
-serial_interface = serial.Serial('/dev/ttyUSB0', 9600, timeout=0.05, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
 
 class deliveryBot(door_Control, signal_Control, light_Control):
     def __init__(self):
@@ -32,11 +29,6 @@ class deliveryBot(door_Control, signal_Control, light_Control):
         rospy.Timer(rospy.Duration(0.1), self.doorActuation_timer_callback)
         ############ Timer for light toggling control ######################
         rospy.Timer(rospy.Duration(0.1), self.lightControl_timer_callback)
-
-        #self.lightCond_pub = rospy.Publisher('/light_Cond',Int16, queue_size = 1)
-
-        #### LIGHT CONDITION PASSTHROUGH ####
-        #self.light_condition = Int16()
 
     def doorActuation_timer_callback(self, event):
         self.doorActuation(self.serial_interface)
