@@ -1,0 +1,17 @@
+[Unit]
+# Type = simple|forking|oneshot|dbus|notify|idle
+Description=Time Fix daemon
+## make sure we only start the service after network is up
+Wants=network-online.target
+After=network.target
+
+[Service]
+## here we can set custom environment variable
+Environment=AUTOSSH_GATETIME=0
+Environment=AUTOSSH_PORT=0
+ExecStart=/etc/network/if-up.d/startup.sh
+# Useful during debugging; remove it once the service is working
+StandardOutput=console
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,3 @@
+<launch>
+<node name="robot_control" pkg="delivery_bot" type="deliveryBot_control.py" output="screen"/>
+</launch>

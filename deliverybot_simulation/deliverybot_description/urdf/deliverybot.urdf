@@ -1,0 +1,30 @@
+<robot name="deliverybot">
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <mesh scale="0.0010 0.0010 0.0010" filename="file://home/home/liamd/catkin_ws/src/delivery_bot/deliverybot_description/Model_Edits/EVA_Body.stl"/>
+            </geometry>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </visual>
+    </link>
+    <link name="cam_rear_link">
+        <origin xyz="-0.4 0 0.4" rpy="0 0 3.1415" />
+    </link>
+
+    <link name="cam_front_link">
+        <origin xyz="0.4 0 0.4" rpy="0 0 0" />
+    </link>
+
+    <!--The links for the front and rear cameras should have already been created from the camera launch nodes-->
+    <joint name="rear_cam_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="cam_rear_link" />
+        <origin xyz="-0.4 0 0.4" rpy="0 0 3.1415" /> <!--The camera is 40cm up, 40cm back, and rotated 180degrees to face backwards-->
+    </joint>
+    <joint name="front_cam_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="cam_front_link" />
+        <origin xyz="0.4 0 0.4" rpy="0 0 0" />
+    </joint>
+</robot>
+<!--rosrun tf view_frames-->

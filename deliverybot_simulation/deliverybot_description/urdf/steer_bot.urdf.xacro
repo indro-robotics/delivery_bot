@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<!--
+  Robot model adapted from https://github.com/CIR-KIT/steer_drive_ros/blob/kinetic-devel/steer_drive_controller/test/common/urdf/steerbot.xacro
+
+  Modifications:
+    Remove base_footprint link. Useful for navigation but not necessary for a simple example.
+    Added materials for URDF
+    Updated inertials
+
+  Geometry:
+    The Ackermann steering controllers require the longitudinal
+    separation between the front and back wheel axes and the
+    lateral separation between the left and right front steering axes.
+    
+    For this model:
+    wheel_separation_h = base_length - 2 * axle_offset = 0.4
+    wheel_separation_w = base_width  + 2 * axle_offset = 0.4
+-->
+<robot name="steer_bot" xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- Include xacro for inertials, materials and wheels -->
+  <xacro:include filename="$(find deliverybot_description)/urdf/wheel.xacro"/>
+
+  <xacro:property name="robot_namespace" value="/steer_bot"/>
+
+  <!-- Gazebo plugins -->
+  <gazebo>
+    <!-- Load ros_control plugin using the steer_bot_hardware_gazebo
+    implementation of the hardware_interface::RobotHW -->
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>${robot_namespace}</robotNamespace>
+      <robotSimType>steer_bot_hardware_gazebo/SteerBotHardwareGazebo</robotSimType>
+      <legacyModeNS>false</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+  <!-- Math constants -->
+  <xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
+
+  <!-- Robot base dimensions -->
+  <xacro:property name="base_length" value="0.85" /> 
+  <xacro:property name="base_width" value="0.30" /> 
+  <xacro:property name="base_height" value="0.75" /> 
+  <xacro:property name="base_mass" value="72.3" /> 
+
+  <!-- Wheel link dimensions -->
+  <xacro:property name="wheel_radius" value="0.125" />
+  <xacro:property name="wheel_thickness" value="0.1" />
+  <xacro:property name="wheel_mass" value="3.5" />
+
+  <!-- Steering link dimensions -->
+  <xacro:property name="steer_radius" value="0.05" />
+  <xacro:property name="steer_thickness" value="0.02" />
+  <xacro:property name="steer_mass" value="1" />
+
+  <!-- Axle positions -->
+  <xacro:property name="axle_offset" value="0.125" />
+  <xacro:property name="steer_offset" value="-0.15" />
+
+  <!-- Base link -->
+  <!--
+    <link name="dummy">
+    </link>
+  -->
+    <link name="base_link">
+      <visual>
+        <origin xyz="0 0 0.40" rpy="0 0 -1.57"/>
+        <geometry>
+          <mesh filename="package://deliverybot_description/models/EVA_Body.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.40" rpy="0 0 -1.57"/>
+        <geometry>
+          <mesh filename="package://deliverybot_description/models/EVA_Body.dae"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="64.3" />
+        <inertia ixx="8.303" ixy="0" ixz="0" iyy="5.468" iyz="0.075" izz="6.02" />
+      </inertial>
+    </link>
+<!--
+    <joint name="dummy_joint" type="fixed">
+      <parent link="dummy" />
+      <child link="base_link"/>
+    </joint>
+-->
+  <!-- Front steer and rear wheel joints required for ackermann_steering_controller -->
+    <xacro:front_steer
+      name="front"
+      parent="base"
+      steer_radius="${steer_radius}"
+      steer_thickness="${steer_thickness}" 
+      steer_mass="${steer_mass}" 
+      base_length="${base_length}"
+      base_width="${base_width}"
+      axle_offset="${axle_offset}"
+      steer_height="${wheel_radius+steer_offset}">
+    </xacro:front_steer>
+
+    <xacro:rear_wheel
+      name="rear"
+      parent="base"
+      wheel_radius="${wheel_radius/4}"
+      wheel_thickness="${wheel_thickness/2}"
+      wheel_mass="${wheel_mass/32}">
+      <origin xyz="${-base_length/2+axle_offset} 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
+    </xacro:rear_wheel>
+
+  <!-- Steerable front wheels -->
+    <xacro:front_wheel_lr 
+      name="front_right"
+      parent="base"
+      reflect="-1"
+      wheel_radius="${wheel_radius}"
+      wheel_thickness="${wheel_thickness}" 
+      wheel_mass="${wheel_mass}" 
+      steer_radius="${steer_radius}"
+      steer_thickness="${steer_thickness}" 
+      steer_mass="${steer_mass}" 
+      base_length="${base_length}"
+      base_width="${base_width}"
+      axle_offset="${axle_offset}"
+      steer_height="${wheel_radius+steer_offset}"
+      model_rotate="-1.57">
+      <origin xyz="0 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
+    </xacro:front_wheel_lr>
+    <xacro:front_wheel_lr
+      name="front_left"
+      parent="base"
+      reflect="1"
+      wheel_radius="${wheel_radius}"
+      wheel_thickness="${wheel_thickness}"
+      wheel_mass="${wheel_mass}" 
+      steer_radius="${steer_radius}"
+      steer_thickness="${steer_thickness}" 
+      steer_mass="${steer_mass}" 
+      base_length="${base_length}"
+      base_width="${base_width}"
+      axle_offset="${axle_offset}"
+      steer_height="${wheel_radius+steer_offset}"
+      model_rotate="1.57">
+      <origin xyz="0 0 0" rpy="${-90 * deg_to_rad} 0 0"/>
+    </xacro:front_wheel_lr>
+
+  <!-- Rear wheels -->
+    <xacro:rear_wheel_lr
+      name="rear_right"
+      parent="base"
+      wheel_radius="${wheel_radius}"
+      wheel_thickness="${wheel_thickness}"
+      wheel_mass="${wheel_mass}"
+      model_rotate="-1.57">
+      <origin xyz="${-base_length/2+axle_offset} ${-base_width/2-axle_offset} 0" rpy="${-90 * deg_to_rad} 0 0"/>
+    </xacro:rear_wheel_lr>
+    <xacro:rear_wheel_lr
+      name="rear_left"
+      parent="base"
+      wheel_radius="${wheel_radius}"
+      wheel_thickness="${wheel_thickness}"
+      wheel_mass="${wheel_mass}"
+      model_rotate="1.57">
+      <origin xyz="${-base_length/2+axle_offset} ${+base_width/2+axle_offset} 0" rpy="${-90 * deg_to_rad} 0 0"/>
+    </xacro:rear_wheel_lr>
+
+  <!-- Colour -->
+  <!-- Door Joint -->
+  <xacro:door
+    name="door"
+    parent="base">
+  </xacro:door>
+<!--
+    <link name="door">
+      <inertial>
+        <origin rpy="0 0 -1.57" xyz="0 0 0" />
+        <mass value="8" />
+        <inertia ixx="0.4381" ixy="0" ixz="0" iyy="0.1637" iyz="0.005" izz="0.6" />
+      </inertial>
+      <collision>
+        <origin rpy="0 0 -1.57" xyz="0 0 0" />
+        <geometry>
+          <mesh filename="package://deliverybot_description/models/EVA_Lid.dae" />
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://deliverybot_description/models/EVA_Lid.dae" />
+        </geometry>
+        <origin rpy="0 0 -1.57" xyz="0.425 0 0" />
+      </visual>
+    </link>
+
+
+    <joint name="door_joint" type="revolute">
+      <limit lower="0" upper="-1.57" effort="100" velocity="0.500" />
+      <origin rpy="0 0 0" xyz="-0.4375 0 .725" />
+      <parent link="base_link" />
+      <child link="door" />
+      <axis xyz="0 1 0" rpy="0 0 0" />
+    </joint>
+
+    <transmission name="door_hinge_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="door_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="door_joint">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+-->
+</robot>
