@@ -4,7 +4,7 @@ The simulation includes an RVIZ model of the bot as well as ackermann steering c
 
 Currently, the intelrealsense cameras are **NOT UTILIZED** under this codebase due to hardware limitations in the computer. Future versions will fix this issue and an autonomy system will be included. 
 
-Branch naming convention follows this syntax: `<ROBOT_VERSION>-<DATE_OF_PUSH>` or in the case of development branches: `<ROBOT_VERSION>-dev`. Developmental branches are used for testing new features and should not be installed on client robots. 
+Branch naming convention follows this syntax: `<ROBOT_VERSION>-<CODEBASE_VERSION>` or in the case of development branches: `<ROBOT_VERSION>-dev`. Developmental branches are used for testing new features and should not be installed on client robots. 
 
 The version of your robot will be included in your documentation. 
 
