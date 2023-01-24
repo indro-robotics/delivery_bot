@@ -1,0 +1,9 @@
+<launch>
+    <include file="$(find hunter_base)/launch/hunter_base.launch">
+        <arg name="port_name" default="can0" />
+        <arg name="simulated_robot" default="false" />
+        <arg name="publish_tf" default="true" />
+    </include>
+    <include file="$(find delivery_bot)/launch/eve_controller.launch"/>
+    <!--<include file="$(find delivery_bot)/launch/object_avoidance.launch" />-->
+</launch> 
