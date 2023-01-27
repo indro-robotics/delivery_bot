@@ -5,5 +5,4 @@
         <arg name="publish_tf" default="true" />
     </include>
     <include file="$(find delivery_bot)/launch/eve_controller.launch"/>
-    <!--<include file="$(find delivery_bot)/launch/object_avoidance.launch" />-->
 </launch> 

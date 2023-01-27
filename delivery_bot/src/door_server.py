@@ -54,7 +54,7 @@ class door_Control:
 
     def doorActuation(self, serial_interface):
         self.serial_interface = serial_interface
-        print(self.doorPos)
+        #print(self.doorPos)
         if self.handle_flag == 1 and self.queue_command == 1:
             self.doorPos_flag = 2
             while True:
