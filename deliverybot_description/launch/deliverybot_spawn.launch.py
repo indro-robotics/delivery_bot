@@ -82,11 +82,11 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    # load_trajectory_controller = Node(
-    #     package= "controller_manager",
-    #     executable="spawner",
-    #     arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
-    # )
+    load_trajectory_controller = Node(
+        package= "controller_manager",
+        executable="spawner",
+        arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
+    )
     #Arguments
     ld.add_action(sim_time_argument)
 
@@ -101,7 +101,7 @@ def generate_launch_description():
 
     #Load Controllers
     ld.add_action(load_joint_state_controller)
-    ld.add_action(load_trajectory_controller)
+    #ld.add_action(load_trajectory_controller)
 
 
     return ld

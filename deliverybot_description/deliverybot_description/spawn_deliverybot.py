@@ -2,7 +2,7 @@
 import os
 import sys
 import rclpy
-from rclpy import Node
+from rclpy.node import Node
 from gazebo_msgs.srv import SpawnEntity
 from functools import partial
 

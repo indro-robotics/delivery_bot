@@ -18,6 +18,9 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     # Gazebo launch
+    
+
+
 
     gazebo_launch_node = ExecuteProcess(
         cmd=['gazebo', '--verbose', 'worlds/empty_world.world', '-s','libgazebo_ros_factory.so', '-s', 'libgazebo_ros_init.so'],
