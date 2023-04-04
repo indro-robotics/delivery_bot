@@ -20,18 +20,19 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # Start World
-    start_world = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_deliverybot_gazebo, 'launch', 'world_start.launch.py'),
-        )
-    )
-
     spawn_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_deliverybot_description, 'launch', 'deliverybot_spawn.launch.py'),
         )
     )     
 
-    ld.add_action(start_world)
+    load_joint_state_controller = Node(
+        package= "controller_manager",
+        executable= "spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+    )
+
+    #ld.add_action(start_world)
     ld.add_action(spawn_robot)
+    ld.add_action(load_joint_state_controller)
     return ld

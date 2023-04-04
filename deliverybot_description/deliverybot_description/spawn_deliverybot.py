@@ -18,6 +18,10 @@ class SpawnDeliverybotNode(Node):
         req.xml = content
         req.robot_namespace = ""
         req.reference_frame = "world"
+        req.initial_pose.position.x = 0.0
+        req.initial_pose.position.y = 0.0
+        req.initial_pose.position.z = 0.2
+
 
         while not client.wait_for_service(timeout_sec=1.0):
             self.get_logger().warn('Service not available, waiting again...')

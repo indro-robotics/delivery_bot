@@ -19,7 +19,7 @@ def generate_launch_description():
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
     pkg_deliverybot_gazebo = get_package_share_directory('deliverybot_gazebo')
     gazebo_world = os.path.join(
-        pkg_deliverybot_gazebo, 'worlds','test_zone.world')
+        pkg_deliverybot_gazebo, 'worlds','obstacle_simulation.sdf')
 
     ld = LaunchDescription()
 
@@ -44,13 +44,12 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'verbose': 'true',
+            'verbose': 'false',
         }.items()
     )
 
     # Launching Gazebo Server
     ld.add_action(gzserver_launch)
-
     # Launching Gazebo Client
     ld.add_action(gzclient_launch)
 
