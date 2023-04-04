@@ -19,19 +19,19 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    # Sart World
+    # Start World
     start_world = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_deliverybot_gazebo, 'launch', 'world_start.launch.py'),
         )
     )
 
-    spawn_robot_world = IncludeLaunchDescription(
+    spawn_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_deliverybot_description, 'launch', 'deliverybot_spawn.launch.py'),
         )
     )     
 
     ld.add_action(start_world)
-    ld.add_action(spawn_robot_world)
+    ld.add_action(spawn_robot)
     return ld

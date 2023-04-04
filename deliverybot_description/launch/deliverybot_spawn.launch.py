@@ -33,6 +33,7 @@ def generate_launch_description():
         os.environ['GAZEBO_PLUGIN_PATH'] = os.environ['GAZEBO_PLUGIN_PATH'] + ':' + install_dir + '/lib'
     else:
         os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'
+        
     
     #Acquiring robot description XACRO file
     xacro_file = os.path.join(pkg_deliverybot_description, 'robot', 'deliverybot.xacro')

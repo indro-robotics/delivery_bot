@@ -56,21 +56,27 @@
         params="
             name
             parent
+            steer_radius
+            steer_thickness
+            steer_mass
             wheel_radius
             wheel_thickness
             wheel_mass
-            *origin">
+            base_length
+            base_width
+            axle_offset
+            steer_height">
         <link name="${name}_wheel_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+                    <cylinder radius="${wheel_radius/4}" length="${wheel_thickness/2}" />
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+                    <cylinder radius="${wheel_radius/4}" length="${wheel_thickness/2}" />
                 </geometry>
             </collision>
             <inertial>
@@ -88,7 +94,8 @@
         <joint name="${name}_wheel_joint" type="continuous">
             <parent link="${parent}_link" />
             <child link="${name}_wheel_link" />
-            <xacro:insert_block name="origin" />
+            <origin xyz="${-base_length/2+axle_offset} 0 ${steer_height}"
+                rpy="${-90 * deg_to_rad} 0 0" />
             <axis xyz="0 1 0" />
         </joint>
     </xacro:macro>
@@ -182,11 +189,15 @@
         params="
         name
         parent
+        reflect
         wheel_radius
         wheel_thickness
         wheel_mass
         model_rotate
-        *origin">
+        base_length
+        base_width
+        axle_offset
+        steer_height">
         <link name="${name}_wheel_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
@@ -209,7 +220,8 @@
         <joint name="${name}_wheel_joint" type="continuous">
             <parent link="${parent}_link" />
             <child link="${name}_wheel_link" />
-            <xacro:insert_block name="origin" />
+            <origin xyz="${-base_length/2+axle_offset} ${reflect*(base_width/2+axle_offset)} ${steer_height}"
+                rpy="${-90 * deg_to_rad} 0 0" />
             <axis xyz="0 0 1" />
         </joint>
         <gazebo reference="${name}_wheel_link">

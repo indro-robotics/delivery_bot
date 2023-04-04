@@ -4,35 +4,54 @@ import os
 import sys
 
 from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_prefix
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import PathJoinSubstitution, TextSubstitution
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-    pkg_box_car_gazebo = get_package_share_directory('deliverybot_gazebo')
-
+    pkg_deliverybot_gazebo = get_package_share_directory('deliverybot_gazebo')
+    gazebo_world = os.path.join(
+        pkg_deliverybot_gazebo, 'worlds','test_zone.world')
 
     ld = LaunchDescription()
-    # Gazebo launch
-    
 
-
-
-    gazebo_launch_node = ExecuteProcess(
-        cmd=['gazebo', '--verbose', 'worlds/empty_world.world', '-s','libgazebo_ros_factory.so', '-s', 'libgazebo_ros_init.so'],
-        output='screen',
+    gzserver_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('gazebo_ros'),
+                'launch', 'gzserver.launch.py',
+            ])
+        ]),
+        launch_arguments={
+            'verbose': 'true',
+            'world': TextSubstitution(text=str(gazebo_world))
+        }.items()
     )
-    world_launch_argument = DeclareLaunchArgument(
-        'world',
-        default_value=[os.path.join(
-            pkg_box_car_gazebo, 'worlds', 'empty_world.world'), ''],
-        description='SDF world file')
-    
-    ld.add_action(gazebo_launch_node)
-    ld.add_action(world_launch_argument)
+
+    gzclient_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            PathJoinSubstitution([
+                FindPackageShare('gazebo_ros'),
+                'launch', 'gzclient.launch.py'
+            ])
+        ]),
+        launch_arguments={
+            'verbose': 'true',
+        }.items()
+    )
+
+    # Launching Gazebo Server
+    ld.add_action(gzserver_launch)
+
+    # Launching Gazebo Client
+    ld.add_action(gzclient_launch)
 
     return ld
