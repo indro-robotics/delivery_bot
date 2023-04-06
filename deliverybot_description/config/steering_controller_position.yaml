@@ -10,14 +10,18 @@ controller_manager:
 
 joint_trajectory_controller:
   ros__parameters:
+    publish_rate: 100
     joints:
       - front_right_steer_joint
       - front_left_steer_joint
       - door_joint
     interface_name: position
+    command_joints:
+      - front_right_steer_joint
+      - front_left_steer_joint
+      - door_joint
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
-      - effort

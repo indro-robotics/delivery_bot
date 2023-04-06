@@ -24,7 +24,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_deliverybot_description, 'launch', 'deliverybot_spawn.launch.py'),
         )
-    )     
+    )
 
     load_joint_state_controller = Node(
         package= "controller_manager",
@@ -32,7 +32,14 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
+    load_trajectory_controller = Node(
+        package= "controller_manager",
+        executable="spawner",
+        arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
+    )
+
     #ld.add_action(start_world)
     ld.add_action(spawn_robot)
-    ld.add_action(load_joint_state_controller)
+    #ld.add_action(load_joint_state_controller)
+    #ld.add_action(load_trajectory_controller)
     return ld

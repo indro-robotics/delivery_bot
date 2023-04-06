@@ -15,8 +15,8 @@
 
     <!-- Math Constants -->
     <xacro:property name="deg_to_rad" value="0.01745329251994329577" />
-    <xacro:property name="steer_limhigh_deg" value="30"/>
-    <xacro:property name="steer_limlow_deg" value="-30"/>
+    <xacro:property name="steer_limhigh_deg" value="30" />
+    <xacro:property name="steer_limlow_deg" value="-30" />
     <!-- Robot Base Dimensions -->
     <xacro:property name="base_length" value="0.85" />
     <xacro:property name="base_width" value="0.30" />
@@ -157,24 +157,26 @@
         axle_offset="${axle_offset}"
         steer_height="${wheel_radius+steer_offset}">
     </xacro:rear_wheel_lr>
-
-    <!-- Door -->
     <xacro:door
         name="door"
         parent="base">
     </xacro:door>
-
-    <xacro:steering_control
-        name="front_right"
-        steer_limlow="${steer_limlow_deg * deg_to_rad}"
-        steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
-    <xacro:steering_control
-        name="front_left"
-        steer_limlow="${steer_limlow_deg * deg_to_rad}"
-        steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
-    <xacro:door_control
-        name="door"
-        door_limlow="${0 * deg_to_rad}"
-        door_limhigh="${90 * deg_to_rad}" />
+    <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+        <xacro:steering_control
+            name="front_right"
+            steer_limlow="${steer_limlow_deg * deg_to_rad}"
+            steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
+        <xacro:steering_control
+            name="front_left"
+            steer_limlow="${steer_limlow_deg * deg_to_rad}"
+            steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
+        <xacro:door_control
+            name="door"
+            door_limlow="${0 * deg_to_rad}"
+            door_limhigh="${90 * deg_to_rad}" />
+    </ros2_control>
 
 </robot>

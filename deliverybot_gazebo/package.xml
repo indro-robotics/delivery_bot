@@ -11,6 +11,7 @@
   <depend>xacro</depend>
   <depend>rclpy</depend>
   <depend>joint_state_publisher</depend>
+  <exec_depend>controller_manager</exec_depend>
   <depend>robot_state_publisher</depend>
   <depend>rviz2</depend>
   <depend>gazebo_ros</depend>

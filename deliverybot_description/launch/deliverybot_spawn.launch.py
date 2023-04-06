@@ -101,8 +101,7 @@ def generate_launch_description():
 
 
     #Load Controllers
-    #ld.add_action(load_joint_state_controller)
-    #ld.add_action(load_trajectory_controller)
-
+    ld.add_action(load_joint_state_controller)
+    ld.add_action(load_trajectory_controller)
 
     return ld
