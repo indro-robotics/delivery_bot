@@ -9,7 +9,8 @@
     <gazebo>
         <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
             <robotNamespace>${robot_namespace}</robotNamespace>
-            <parameters>$(find deliverybot_description)/config/steering_controller_position.yaml</parameters>
+            <!-- <parameters>$(find deliverybot_description)/config/steering_controller_position.yaml</parameters> -->
+            <parameters>$(find deliverybot_description)/config/deliverybot_controller.yaml</parameters>
         </plugin>
     </gazebo>
 
@@ -32,6 +33,10 @@
     <xacro:property name="steer_radius" value="0.1" />
     <xacro:property name="steer_thickness" value="0.02" />
     <xacro:property name="steer_mass" value="1" />
+
+    <!-- Velocity and Movement -->
+    <xacro:property name="velocity_limlow" value="-5.0"/>
+    <xacro:property name="velocity_limhigh" value="8.0"/> 
 
     <!-- Axle Positions -->
     <xacro:property name="axle_offset" value="0.125" />
@@ -177,6 +182,15 @@
             name="door"
             door_limlow="${0 * deg_to_rad}"
             door_limhigh="${90 * deg_to_rad}" />
+        <xacro:velocity_control
+            name="rear_left"
+            velocity_limlow="${velocity_limlow}"
+            velocity_limhigh="${velocity_limhigh}"/>
+        <xacro:velocity_control
+            name="rear_right"
+            velocity_limlow="${velocity_limlow}"
+            velocity_limhigh="${velocity_limhigh}"/>
+
     </ros2_control>
 
 </robot>

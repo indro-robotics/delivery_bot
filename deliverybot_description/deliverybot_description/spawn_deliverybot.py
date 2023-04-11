@@ -8,31 +8,26 @@ from functools import partial
 
 
 from ament_index_python.packages import get_package_share_directory
-from ament_index_python.packages import get_package_prefix
-import xacro
 
 
 class SpawnDeliverybotNode(Node):
     def __init__(self):
         super().__init__("minimal_client")
         client = self.create_client(SpawnEntity, '/spawn_entity')
-        # content = sys.argv[1]
+        content = sys.argv[1]
 
         pkg_deliverybot_description = get_package_share_directory(
             'deliverybot_description')
-        install_dir = get_package_prefix('deliverybot_description')
 
         xacro_file = os.path.join(
             pkg_deliverybot_description, 'robot', 'deliverybot.xacro')
         assert os.path.exists(
             xacro_file), "The deliverybot.xacro doesn't exist in " + str(xacro_file)
 
-        robot_description_config = xacro.process_file(xacro_file)
-        robot_description = robot_description_config.toxml()
 
         req = SpawnEntity.Request()
         req.name = "deliverybot"
-        req.xml = robot_description
+        req.xml = content
         req.robot_namespace = ""
         req.reference_frame = "world"
         req.initial_pose.position.x = 0.0
@@ -57,3 +52,4 @@ def main(args=None):
     node = SpawnDeliverybotNode()
     rclpy.spin(node)
     rclpy.shutdown()
+ 

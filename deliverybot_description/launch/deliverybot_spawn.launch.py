@@ -83,10 +83,28 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    load_trajectory_controller = Node(
+    # load_trajectory_controller = Node(
+    #     package= "controller_manager",
+    #     executable="spawner",
+    #     arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
+    # )
+
+    load_ackermann_steering_controller = Node(
         package= "controller_manager",
         executable="spawner",
-        arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
+        arguments=["ackermann_steering_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    load_door_position_controller = Node(
+        package= "controller_manager",
+        executable="spawner",
+        arguments=["door_position_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    load_rear_wheel_controller = Node(
+        package= "controller_manager",
+        executable="spawner",
+        arguments=["rear_wheel_controller", "--controller-manager", "/controller_manager"],
     )
     #Arguments
     ld.add_action(sim_time_argument)
@@ -102,6 +120,9 @@ def generate_launch_description():
 
     #Load Controllers
     ld.add_action(load_joint_state_controller)
-    ld.add_action(load_trajectory_controller)
+    #ld.add_action(load_trajectory_controller)
+    ld.add_action(load_ackermann_steering_controller)
+    ld.add_action(load_door_position_controller)
+    ld.add_action(load_rear_wheel_controller)    
 
     return ld

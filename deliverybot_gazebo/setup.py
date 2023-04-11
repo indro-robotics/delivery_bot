@@ -45,6 +45,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'wheel_steer = deliverybot_gazebo.wheel_steer:main',
         ],
     },
 )
