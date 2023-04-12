@@ -13,7 +13,7 @@
             </command_interface>
             <state_interface name="position" />
             <state_interface name="velocity" />
-                <!-- <state_interface name="effort" /> -->
+            <state_interface name="effort"/>
         </joint>
     </xacro:macro>
     <xacro:macro name="door_control"
@@ -40,9 +40,8 @@
                 <param name="min">${velocity_limlow}</param>
                 <param name="max">${velocity_limhigh}</param>
             </command_interface>
-            <state_interface name="position" />
             <state_interface name="velocity"/>
-            <state_interface name="effoty"/>
+            <state_interface name="effort"/>
         </joint>
     </xacro:macro>
 </robot>

@@ -3,103 +3,8 @@
 <robot name="deliverybot_wheel" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:property name="steer_effort" value="10.0" />
     <xacro:property name="steer_velocity"
-        value="5.0" />
+        value="0.5" />
     <xacro:property name="steer_limit_deg" value="35.0" />
-
-    <!-- Bicycle model front steering link (required for the steer drive controller) -->
-    <xacro:macro name="front_steer"
-        params="
-        name
-        parent
-        steer_radius
-        steer_thickness
-        steer_mass
-        base_length
-        base_width
-        axle_offset
-        steer_height">
-        <link name="${name}_steer_link">
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <cylinder radius="${steer_radius}" length="${steer_thickness}" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <cylinder radius="${steer_radius}" length="${steer_thickness}" />
-                </geometry>
-            </collision>
-            <inertial>
-                <origin rpy="0 0 0" xyz="0 0 0" />
-                <mass value="${steer_mass}" />
-                <inertia
-                    ixx="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
-                    ixy="0.0" ixz="0.0"
-                    iyy="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
-                    iyz="0.0"
-                    izz="${steer_mass * (steer_radius * steer_radius) / 2.0}" />
-            </inertial>
-        </link>
-        <joint name="${name}_steer_joint" type="revolute">
-            <parent link="${parent}_link" />
-            <child link="${name}_steer_link" />
-            <origin xyz="${base_length/2-axle_offset} 0 ${steer_height}" rpy="0 0 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${steer_effort}"
-                lower="${-180.0 * deg_to_rad}" upper="${180.0 * deg_to_rad}"
-                velocity="${steer_velocity}" />
-        </joint>
-    </xacro:macro>
-    <xacro:macro name="rear_wheel"
-        params="
-            name
-            parent
-            steer_radius
-            steer_thickness
-            steer_mass
-            wheel_radius
-            wheel_thickness
-            wheel_mass
-            base_length
-            base_width
-            axle_offset
-            steer_height">
-        <link name="${name}_wheel_link">
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <cylinder radius="${wheel_radius/4}" length="${wheel_thickness/2}" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <cylinder radius="${wheel_radius/4}" length="${wheel_thickness/2}" />
-                </geometry>
-            </collision>
-            <inertial>
-                <origin rpy="0 0 0" xyz="0 0 0" />
-                <mass value="${steer_mass}" />
-                <inertia
-                    ixx="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
-                    ixy="0.0" ixz="0.0"
-                    iyy="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
-                    iyz="0.0"
-                    izz="${steer_mass * (steer_radius * steer_radius) / 2.0}" />
-            </inertial>
-        </link>
-
-        <joint name="${name}_wheel_joint" type="continuous">
-            <parent link="${parent}_link" />
-            <child link="${name}_wheel_link" />
-            <origin xyz="${-base_length/2+axle_offset} 0 ${steer_height}"
-                rpy="${-90 * deg_to_rad} 0 0" />
-            <axis xyz="0 1 0" />
-        </joint>
-    </xacro:macro>
-    <!-- Front Steering Links Xacro -->
     <xacro:macro
         name="front_wheel_lr"
         params="
@@ -146,13 +51,13 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Wheel.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Wheel.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </collision>
             <inertial>
@@ -202,13 +107,13 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Wheel.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Wheel.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </collision>
             <inertial>
@@ -239,14 +144,14 @@
         <link name="${name}_link">
             <visual>
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Lid.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
                 </geometry>
                 <origin rpy="0 0 -1.57" xyz="0.425 0 0" />
             </visual>
             <collision>
                 <origin rpy="0 0 -1.57" xyz="0.425 0 0" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/meshes/EVA_Lid.dae" />
+                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
                 </geometry>
             </collision>
             <inertial>

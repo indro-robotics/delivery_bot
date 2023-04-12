@@ -54,6 +54,11 @@ def generate_launch_description():
             'verbose': 'false',
         }.items()
     )
+    robot_control_node = Node(
+        package='deliverybot_control',
+        executable='deliverybot_control',
+        output='screen',
+    )
 
     # Launching Gazebo Server
     ld.add_action(gzserver_launch)
@@ -61,5 +66,7 @@ def generate_launch_description():
     ld.add_action(gzclient_launch)
     # Spawning the robot
     ld.add_action(spawn_robot)
+    #Launching control node
+    ld.add_action(robot_control_node)
 
     return ld
