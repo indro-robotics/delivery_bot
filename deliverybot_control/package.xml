@@ -3,7 +3,7 @@
 <package format="3">
   <name>deliverybot_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Simulation Control Package for Deliverybot Simulation</description>
   <maintainer email="liamd@indrorobotics.com">liamd</maintainer>
   <license>TODO: License declaration</license>
 

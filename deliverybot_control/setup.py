@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='liamd',
     maintainer_email='liamd@indrorobotics.com',
-    description='TODO: Package description',
+    description='Simulation Control Package for Deliverybot Simulation',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
