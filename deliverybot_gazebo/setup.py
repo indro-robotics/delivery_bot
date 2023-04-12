@@ -46,6 +46,7 @@ setup(
     entry_points={
         'console_scripts': [
             'wheel_steer = deliverybot_gazebo.wheel_steer:main',
+            'velocity_control = deliverybot_gazebo.velocity_control:main',
         ],
     },
 )

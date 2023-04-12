@@ -9,7 +9,8 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     rear_wheel_controller:
-      type: velocity_controllers/JointGroupVelocityController
+      #type: velocity_controllers/JointGroupVelocityController
+      type: joint_trajectory_controller/JointTrajectoryController
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -56,4 +57,3 @@ rear_wheel_controller:
     state_interfaces:
       - position
       - velocity
-      - effort
