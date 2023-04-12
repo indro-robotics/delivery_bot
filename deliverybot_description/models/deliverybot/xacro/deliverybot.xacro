@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 
 <robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
-    <xacro:include filename="$(find deliverybot_description)/robot/deliverybot_wheel.xacro" />
-    <xacro:include filename="$(find deliverybot_description)/robot/deliverybot_control.xacro" />
+    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_wheel.xacro" />
+    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_control.xacro" />
     <xacro:property name="robot_namespace" value="/deliverybot" />
 
     <!-- Gazebo Plugins -->
     <gazebo>
         <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
             <robotNamespace>${robot_namespace}</robotNamespace>
-            <!-- <parameters>$(find deliverybot_description)/config/steering_controller_position.yaml</parameters> -->
-            <parameters>$(find deliverybot_description)/config/deliverybot_controller.yaml</parameters>
+            <parameters>$(find deliverybot_description)/models/deliverybot/config/controllers.yaml</parameters>
         </plugin>
     </gazebo>
 
@@ -42,19 +41,19 @@
     <xacro:property name="axle_offset" value="0.125" />
     <xacro:property name="steer_offset" value="-0.15" />
     <!-- Dummy Link -->
-    <link name="dummy" />
+    <link name="base_footprint" />
     <!-- Base Link -->
     <link name="base_link">
         <visual>
             <origin xyz="0 0 0.40" rpy="0 0 -1.57" />
             <geometry>
-                <mesh filename="package://deliverybot_description/meshes/EVA_Body.dae" />
+                <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0.40" rpy="0 0 -1.57" />
             <geometry>
-                <mesh filename="package://deliverybot_description/meshes/EVA_Body.dae" />
+                <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
             </geometry>
         </collision>
         <inertial>
@@ -64,38 +63,11 @@
         </inertial>
     </link>
     <!-- Dummy Joint -->
-    <joint name="dummy_joint" type="fixed">
-        <parent link="dummy" />
+    <joint name="base_link_joint" type="fixed">
+        <origin xyz="0 0 0" />
+        <parent link="base_footprint" />
         <child link="base_link" />
     </joint>
-
-    <!-- Front steer and rear wheel joints required for ackermann_steering_controller -->
-    <xacro:front_steer
-        name="front"
-        parent="base"
-        steer_radius="${steer_radius}"
-        steer_thickness="${steer_thickness}"
-        steer_mass="${steer_mass}"
-        base_length="${base_length}"
-        base_width="${base_width}"
-        axle_offset="${axle_offset}"
-        steer_height="${wheel_radius+steer_offset}">
-    </xacro:front_steer>
-
-    <xacro:rear_wheel
-        name="rear"
-        parent="base"
-        steer_radius="${steer_radius}"
-        steer_thickness="${steer_thickness}"
-        steer_mass="${steer_mass}"
-        wheel_radius="${wheel_radius}"
-        wheel_thickness="${wheel_thickness}"
-        wheel_mass="${wheel_mass/32}"
-        base_length="${base_length}"
-        base_width="${base_width}"
-        axle_offset="${axle_offset}"
-        steer_height="${wheel_radius+steer_offset}">
-    </xacro:rear_wheel>
 
     <!-- Steerable Front Wheels -->
     <xacro:front_wheel_lr
@@ -133,7 +105,6 @@
         model_rotate="1.57">
         <origin xyz="0 0 0" rpy="${-90 * deg_to_rad} 0 0" />
     </xacro:front_wheel_lr>
-
     <!--Rear
     Wheels -->
     <xacro:rear_wheel_lr

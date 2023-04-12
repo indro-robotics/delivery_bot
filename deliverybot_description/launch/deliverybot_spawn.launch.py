@@ -36,7 +36,7 @@ def generate_launch_description():
         
     
     #Acquiring robot description XACRO file
-    xacro_file = os.path.join(pkg_deliverybot_description, 'robot', 'deliverybot.xacro')
+    xacro_file = os.path.join(pkg_deliverybot_description, 'models/deliverybot/xacro', 'deliverybot.xacro')
     assert os.path.exists(xacro_file), "The deliverybot.xacro doesn't exist in " + str(xacro_file)
 
     robot_description_config = xacro.process_file(xacro_file)
@@ -77,7 +77,7 @@ def generate_launch_description():
         description='Use simulation (Gazebo) clock if true',
     )
 
-    load_joint_state_controller = Node(
+    joint_state_broadcaster = Node(
         package= "controller_manager",
         executable= "spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
@@ -89,22 +89,22 @@ def generate_launch_description():
     #     arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
     # )
 
-    load_ackermann_steering_controller = Node(
+    forward_position_controller = Node(
         package= "controller_manager",
         executable="spawner",
-        arguments=["ackermann_steering_controller", "--controller-manager", "/controller_manager"],
+        arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
     )
 
-    load_door_position_controller = Node(
+    forward_velocity_controller = Node(
+        package= "controller_manager",
+        executable="spawner",
+        arguments=["forward_velocity_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    door_position_controller = Node(
         package= "controller_manager",
         executable="spawner",
         arguments=["door_position_controller", "--controller-manager", "/controller_manager"],
-    )
-
-    load_rear_wheel_controller = Node(
-        package= "controller_manager",
-        executable="spawner",
-        arguments=["rear_wheel_controller", "--controller-manager", "/controller_manager"],
     )
     #Arguments
     ld.add_action(sim_time_argument)
@@ -119,10 +119,9 @@ def generate_launch_description():
 
 
     #Load Controllers
-    ld.add_action(load_joint_state_controller)
-    #ld.add_action(load_trajectory_controller)
-    ld.add_action(load_ackermann_steering_controller)
-    ld.add_action(load_door_position_controller)
-    ld.add_action(load_rear_wheel_controller)    
+    ld.add_action(joint_state_broadcaster)
+    ld.add_action(forward_position_controller)
+    ld.add_action(forward_velocity_controller)
+    ld.add_action(door_position_controller)    
 
     return ld

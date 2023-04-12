@@ -20,7 +20,7 @@ class SpawnDeliverybotNode(Node):
             'deliverybot_description')
 
         xacro_file = os.path.join(
-            pkg_deliverybot_description, 'robot', 'deliverybot.xacro')
+            pkg_deliverybot_description, 'models/deliverybot/xacro', 'deliverybot.xacro')
         assert os.path.exists(
             xacro_file), "The deliverybot.xacro doesn't exist in " + str(xacro_file)
 
