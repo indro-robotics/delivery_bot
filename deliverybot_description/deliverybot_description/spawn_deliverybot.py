@@ -1,29 +1,15 @@
 #!/usr/bin/env python3
-import os
 import sys
 import rclpy
 from rclpy.node import Node
 from gazebo_msgs.srv import SpawnEntity
 from functools import partial
 
-
-from ament_index_python.packages import get_package_share_directory
-
-
 class SpawnDeliverybotNode(Node):
     def __init__(self):
         super().__init__("minimal_client")
         client = self.create_client(SpawnEntity, '/spawn_entity')
         content = sys.argv[1]
-
-        pkg_deliverybot_description = get_package_share_directory(
-            'deliverybot_description')
-
-        xacro_file = os.path.join(
-            pkg_deliverybot_description, 'models/deliverybot/xacro', 'deliverybot.xacro')
-        assert os.path.exists(
-            xacro_file), "The deliverybot.xacro doesn't exist in " + str(xacro_file)
-
 
         req = SpawnEntity.Request()
         req.name = "deliverybot"

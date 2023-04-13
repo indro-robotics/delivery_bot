@@ -8,12 +8,9 @@ from ament_index_python.packages import get_package_prefix
 
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess, SetEnvironmentVariable, IncludeLaunchDescription, RegisterEventHandler
-from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
-from launch.event_handlers import OnProcessExit
 
-from scripts import GazeboRosPaths
 import xacro
 
 
@@ -82,12 +79,6 @@ def generate_launch_description():
         executable= "spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
-
-    # load_trajectory_controller = Node(
-    #     package= "controller_manager",
-    #     executable="spawner",
-    #     arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
-    # )
 
     forward_position_controller = Node(
         package= "controller_manager",
