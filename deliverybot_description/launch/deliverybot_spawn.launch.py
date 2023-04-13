@@ -5,15 +5,10 @@ import sys
 
 from ament_index_python.packages import get_package_share_directory
 from ament_index_python.packages import get_package_prefix
-
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
-
 import xacro
-
-
 
 def generate_launch_description():
 
@@ -40,7 +35,6 @@ def generate_launch_description():
     robot_description = robot_description_config.toxml()
 
     # Arguments
-
     ld = LaunchDescription()
 
     robot_state_publisher_node = Node(
@@ -99,16 +93,12 @@ def generate_launch_description():
     )
     #Arguments
     ld.add_action(sim_time_argument)
-
     #Robot States
     ld.add_action(robot_state_publisher_node)
     ld.add_action(joints_state_publisher_node)
-
     #Robot Visualization
     ld.add_action(rviz2_node)
     ld.add_action(spawn_deliverybot_node)
-
-
     #Load Controllers
     ld.add_action(joint_state_broadcaster)
     ld.add_action(forward_position_controller)

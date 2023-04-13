@@ -9,7 +9,6 @@ launch_folder = 'launch'
 worlds_folder = 'worlds'
 models_folder = 'models'
 
-
 data_files = [
     ('share/ament_index/resource_index/packages',
      ['resource/' + package_name]),
