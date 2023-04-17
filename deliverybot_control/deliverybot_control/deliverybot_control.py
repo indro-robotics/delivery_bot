@@ -29,7 +29,7 @@ class DeliverybotControlNode(Node):
         self.vel_msg_prev = 0.0
 
         self.pos = np.array([0, 0], float)
-        self.vel = np.array([0, 0], float)
+        self.vel = np.array([0, 0, 0, 0], float)
 
         self.pub_pos_ = self.create_publisher(
             Float64MultiArray, '/forward_position_controller/commands', 10)

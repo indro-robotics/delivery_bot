@@ -160,5 +160,13 @@
             name="rear_right"
             velocity_limlow="${velocity_limlow}"
             velocity_limhigh="${velocity_limhigh}"/>
+        <xacro:velocity_control
+            name="front_right"
+            velocity_limlow="${velocity_limlow}"
+            velocity_limhigh="${velocity_limhigh}"/>
+        <xacro:velocity_control
+            name="front_left"
+            velocity_limlow="${velocity_limlow}"
+            velocity_limhigh="${velocity_limhigh}"/>
     </ros2_control>
 </robot>

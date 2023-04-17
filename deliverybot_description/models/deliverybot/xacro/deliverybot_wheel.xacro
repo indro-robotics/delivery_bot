@@ -51,13 +51,15 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </collision>
             <inertial>
@@ -87,6 +89,28 @@
             <kd value="1.0" />
             <fdir1 value="0 1 0" />
         </gazebo>
+
+        <!-- Transmissions -->
+        <!-- <transmission name="${name}_steer_joint_transmission">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_steer_joint">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_steer_motor">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+        <transmission name="{name}_wheel_joint_transmission">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_wheel_joint">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_wheel_motor">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission> -->
     </xacro:macro>
     <!-- Rear Wheel Links -->
     <xacro:macro
@@ -107,13 +131,15 @@
             <visual>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </collision>
             <inertial>
@@ -125,7 +151,8 @@
         <joint name="${name}_wheel_joint" type="continuous">
             <parent link="${parent}_link" />
             <child link="${name}_wheel_link" />
-            <origin xyz="${-base_length/2+axle_offset} ${reflect*(base_width/2+axle_offset)} ${steer_height}"
+            <origin
+                xyz="${-base_length/2+axle_offset} ${reflect*(base_width/2+axle_offset)} ${steer_height}"
                 rpy="${-90 * deg_to_rad} 0 0" />
             <axis xyz="0 0 1" />
         </joint>
@@ -136,6 +163,16 @@
             <kd value="1.0" />
             <fdir1 value="0 1 0" />
         </gazebo>
+        <!-- <transmission name="{name}_wheel_joint_transmission">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_wheel_joint">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_wheel_motor">
+                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission> -->
     </xacro:macro>
     <xacro:macro name="door"
         params="
@@ -144,14 +181,16 @@
         <link name="${name}_link">
             <visual>
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
                 </geometry>
-                <origin rpy="0 0 -1.57" xyz="0.425 0 0" />
+                <origin rpy="0 0 ${-90 * deg_to_rad}" xyz="0.42375 0 0" />
             </visual>
             <collision>
-                <origin rpy="0 0 -1.57" xyz="0.425 0 0" />
+                <origin rpy="0 0 ${-90 * deg_to_rad}" xyz="0.42375 0 0" />
                 <geometry>
-                    <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
                 </geometry>
             </collision>
             <inertial>
@@ -162,7 +201,7 @@
         </link>
         <joint name="${name}_joint" type="revolute">
             <limit lower="-1.57" upper="0" effort="100" velocity="0.5" />
-            <origin rpy="0 0 0" xyz="-0.4375 0 0.725" />
+            <origin rpy="0 0 0" xyz="-0.4370 0.0025 0.725" />
             <parent link="${parent}_link" />
             <child link="${name}_link" />
             <axis xyz="0 1 0" rpy="0 0 0" />
