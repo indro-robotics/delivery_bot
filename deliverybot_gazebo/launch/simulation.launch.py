@@ -65,6 +65,6 @@ def generate_launch_description():
     # Spawning the robot
     ld.add_action(spawn_robot)
     #Launching control node
-    #ld.add_action(robot_control_node)
+    ld.add_action(robot_control_node)
 
     return ld
