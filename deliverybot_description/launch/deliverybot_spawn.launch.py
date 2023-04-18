@@ -88,7 +88,7 @@ def generate_launch_description():
     forward_position_controller = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["forward_position_controller",
+        arguments=["steering_trajectory_controller",
                    "--controller-manager", "/controller_manager"],
     )
 

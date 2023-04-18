@@ -26,13 +26,16 @@ class DeliverybotControlNode(Node):
         self.wheel_radius = 0.0125
         self.steer_offset = 0.15  # CHECK VALUE
         self.steering_track = self.base_width - 2*self.steer_offset
+
         self.vel_msg_prev = 0.0
+        self.steer_msg_prev = 0.0
 
-        self.pos = np.array([0, 0], float)
-        self.vel = np.array([0, 0, 0, 0], float)
+        self.steer_pos = np.array([0, 0], float)
+        self.vel = np.array([0, 0, 0, 0], float) #RR, RL, FR, FL
 
-        self.pub_pos_ = self.create_publisher(
-            Float64MultiArray, '/forward_position_controller/commands', 10)
+        self.door_pos_prev = np.array([0], float)
+        self.steer_pos_prev =np.array([0, 0], float)
+
         self.pub_vel_ = self.create_publisher(
             Float64MultiArray, '/forward_velocity_controller/commands', 10)
         self.timer_ = self.create_timer(timer_period, self.timer_callback)
@@ -43,56 +46,68 @@ class DeliverybotControlNode(Node):
             self.jointStates_callback,
             10
         )
-
-        self._action_client = ActionClient(
+        self._action_door_client = ActionClient(
             self, FollowJointTrajectory, '/door_position_controller/follow_joint_trajectory')
-        
+        self._action_steer_client = ActionClient(
+            self, FollowJointTrajectory, '/steering_trajectory_controller/follow_joint_trajectory')
+
 
     def theta_out(self, delta_ack):
-        return math.atan((self.base_length*math.atan(delta_ack))/(self.base_length + 0.5*self.base_width*math.atan(delta_ack)))
+        return float(math.atan((self.base_length*math.atan(delta_ack))/(self.base_length + 0.5*self.base_width*math.atan(delta_ack))))
 
     def theta_in(self, delta_ack):
-        return math.atan((self.base_length*math.atan(delta_ack))/(self.base_length - 0.5*self.base_width*math.atan(delta_ack)))
+        return float(math.atan((self.base_length*math.atan(delta_ack))/(self.base_length - 0.5*self.base_width*math.atan(delta_ack))))
 
     def timer_callback(self):
         global vel_msg
 
         sign = np.sign(vel_msg.linear.x)
         if vel_msg.angular.z > 0:
-            self.pos[0] = self.theta_in(vel_msg.angular.z)
             self.vel[0] = sign * np.abs(vel_msg.linear.x * \
-                (np.sin(vel_msg.angular.z) / np.sin(self.pos[0])))
-            self.pos[1] = self.theta_out(vel_msg.angular.z)
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
             self.vel[1] = sign * np.abs(vel_msg.linear.x * \
-                (np.sin(vel_msg.angular.z) / np.sin(self.pos[1])))
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
+            self.vel[2] = sign * np.abs(vel_msg.linear.x * \
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
+            self.vel[3] = sign * np.abs(vel_msg.linear.x * \
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
         if vel_msg.angular.z < 0:
-            self.pos[0] = self.theta_out(vel_msg.angular.z)
             self.vel[0] = sign * np.abs(vel_msg.linear.x * \
-                (np.sin(vel_msg.angular.z) / np.sin(self.pos[0])))
-            self.pos[1] = self.theta_in(vel_msg.angular.z)
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
             self.vel[1] = sign * np.abs(vel_msg.linear.x * \
-                (np.sin(vel_msg.angular.z) / np.sin(self.pos[1])))
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
+            self.vel[2] = sign * np.abs(vel_msg.linear.x * \
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
+            self.vel[3] = sign * np.abs(vel_msg.linear.x * \
+                (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
         if vel_msg.angular.z == 0:
-            self.pos[0] = 0
             self.vel[0] = vel_msg.linear.x
-            self.pos[1] = 0
             self.vel[1] = vel_msg.linear.x
+            self.vel[2] = vel_msg.linear.x
+            self.vel[3] = vel_msg.linear.x
 
-        pos_array = Float64MultiArray(data=self.pos)
         vel_array = Float64MultiArray(data=self.vel)
 
-        self.pub_pos_.publish(pos_array)
         self.pub_vel_.publish(vel_array)
-        self.pos[:] = 0
         self.vel[:] = 0
 
     def jointStates_callback(self, msg):
         global vel_msg
         joint_positions = msg.position
-        self.positions_prev = [joint_positions[2]]
+        steer_msg = vel_msg.angular.z
+
+        self.door_pos_prev = [float(joint_positions[4])]
+        self.steer_pos_prev = [float(joint_positions[0]), float(joint_positions[1])]
+        if np.abs(np.sum(self.steer_pos_prev)) < 0.004:
+                self.steer_pos_prev = [0.0, 0.0]
         if vel_msg.linear.z != self.vel_msg_prev:
             self.get_logger().info('Door Toggled.')
             self.send_door_goal()
+
+        if np.abs(steer_msg) > 0.610865: #35 degrees in radians (Steering limit)
+            steer_msg = float(np.sign(steer_msg) * 0.610865)
+        if steer_msg != self.steer_msg_prev:
+           self.send_steer_goal(steer_msg)
 
     def send_door_goal(self):
         global vel_msg
@@ -100,22 +115,26 @@ class DeliverybotControlNode(Node):
         goal_msg = FollowJointTrajectory.Goal()
         points = []
         point1 = JointTrajectoryPoint()
-        point1.positions = self.positions_prev
-
-        point2 = JointTrajectoryPoint()
-        point2.time_from_start = Duration(seconds=3, nanoseconds=0).to_msg()
+        point1.positions = self.door_pos_prev
 
         if vel_msg.linear.z > 0:
-            self.positions = [-1.5708]
+            door_pos = [-1.5708]
 
         if vel_msg.linear.z < 0:
-            self.positions = [0.0]
+            door_pos = [0.0]
         if vel_msg.linear.z == 0:
-            self.positions = self.positions_prev
+            door_pos = self.door_pos_prev
 
+        norm_coeff = np.abs(door_pos[0] - self.door_pos_prev[0]) / 1.5708
+        if norm_coeff == 0:
+            norm_coeff = 1
+        door_time = norm_coeff * 3
+
+        point2 = JointTrajectoryPoint()
+        point2.time_from_start = Duration(seconds=door_time, nanoseconds=0).to_msg()
+        point2.positions = door_pos
         if point1 == point2:
             return
-        point2.positions = self.positions
         points = [point1, point2]
 
         goal_msg.goal_time_tolerance = Duration(
@@ -123,26 +142,61 @@ class DeliverybotControlNode(Node):
         goal_msg.trajectory.joint_names = ['door_joint']
         goal_msg.trajectory.points = points
 
-        self._action_client.wait_for_server()
-        self._send_door_goal_future = self._action_client.send_goal_async(
+        self._action_door_client.wait_for_server()
+        self._send_door_goal_future = self._action_door_client.send_goal_async(
             goal_msg, feedback_callback=self.feedback_callback)
-
         self._send_door_goal_future.add_done_callback(self.goal_response_callback)
         
+    def send_steer_goal(self, steer_msg):
+        global vel_msg
+        goal_msg = FollowJointTrajectory.Goal()
+        #Creating timing normalizer for duration of movement
+        norm_coeff = np.abs(steer_msg-self.steer_msg_prev) / 0.61085
+        print(norm_coeff)
+        steer_time = norm_coeff * 0.5 #1.5 seconds to move from straight to max turn
+        self.steer_msg_prev = steer_msg
+
+        #Creating joint controller messages
+        goal_msg = FollowJointTrajectory.Goal()
+        points = []
+        point1 = JointTrajectoryPoint()
+        point1.positions = self.steer_pos_prev
+        
+
+        point2 = JointTrajectoryPoint()
+        point2.time_from_start = Duration(seconds=steer_time, nanoseconds=0).to_msg()
+
+        if steer_msg > 0:
+            self.steer_pos = [self.theta_in(steer_msg), self.theta_out(steer_msg)]
+        if steer_msg < 0:
+            self.steer_pos = [self.theta_out(steer_msg), self.theta_in(steer_msg)]
+        if steer_msg == 0:
+            self.steer_pos = [0.0, 0.0]
+
+        point2.positions = self.steer_pos
+        points = [point1, point2]
+
+        goal_msg.goal_time_tolerance = Duration(
+            seconds=1, nanoseconds=0).to_msg()
+        goal_msg.trajectory.joint_names = ['front_right_steer_joint','front_left_steer_joint']
+        goal_msg.trajectory.points = points
+
+        self._action_steer_client.wait_for_server()
+        self._send_steer_goal_future = self._action_steer_client.send_goal_async(
+            goal_msg, feedback_callback=self.feedback_callback)
+
+        self._send_steer_goal_future.add_done_callback(self.goal_response_callback)
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
             return
-
         self.get_logger().info('Goal accepted :)')
-
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def get_result_callback(self, future):
         result = future.result().result
-        #self.get_logger().info('Result: '+str(result))
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback

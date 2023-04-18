@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
-    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_wheel.xacro" />
+    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_joints.xacro" />
     <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_control.xacro" />
     <xacro:property name="robot_namespace" value="/deliverybot" />
 

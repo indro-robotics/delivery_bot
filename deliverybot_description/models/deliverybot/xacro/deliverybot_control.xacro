@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot name="deliverybot_wheel" xmlns:xacro="http://wiki.ros.org/xacro">
+<robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:macro name="steering_control"
         params="
         name
@@ -13,7 +13,6 @@
             </command_interface>
             <state_interface name="position" />
             <state_interface name="velocity" />
-            <state_interface name="effort"/>
         </joint>
     </xacro:macro>
     <xacro:macro name="door_control"

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<robot name="deliverybot_wheel" xmlns:xacro="http://wiki.ros.org/xacro">
+<robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:property name="steer_effort" value="10.0" />
     <xacro:property name="steer_velocity"
         value="0.5" />
@@ -61,6 +61,14 @@
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.7</mu>
+                            <mu2>0.7</mu2>
+                        </ode>
+                    </friction>
+                </surface>
             </collision>
             <inertial>
                 <origin xyz="0 0 0" rpy="0 ${model_rotate} 1.57" />
@@ -89,28 +97,6 @@
             <kd value="1.0" />
             <fdir1 value="0 1 0" />
         </gazebo>
-
-        <!-- Transmissions -->
-        <!-- <transmission name="${name}_steer_joint_transmission">
-            <type>transmission_interface/SimpleTransmission</type>
-            <joint name="${name}_steer_joint">
-                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-            </joint>
-            <actuator name="${name}_steer_motor">
-                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-                <mechanicalReduction>1</mechanicalReduction>
-            </actuator>
-        </transmission>
-        <transmission name="{name}_wheel_joint_transmission">
-            <type>transmission_interface/SimpleTransmission</type>
-            <joint name="${name}_wheel_joint">
-                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-            </joint>
-            <actuator name="${name}_wheel_motor">
-                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-                <mechanicalReduction>1</mechanicalReduction>
-            </actuator>
-        </transmission> -->
     </xacro:macro>
     <!-- Rear Wheel Links -->
     <xacro:macro
@@ -141,12 +127,21 @@
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.7</mu>
+                            <mu2>0.7</mu2>
+                        </ode>
+                    </friction>
+                </surface>
             </collision>
             <inertial>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <mass value="3.512" />
                 <inertia ixx="0.02665" ixy="0" ixz="0" iyy="0.0148" iyz="0" izz="0.01479" />
             </inertial>
+            
         </link>
         <joint name="${name}_wheel_joint" type="continuous">
             <parent link="${parent}_link" />
@@ -163,16 +158,6 @@
             <kd value="1.0" />
             <fdir1 value="0 1 0" />
         </gazebo>
-        <!-- <transmission name="{name}_wheel_joint_transmission">
-            <type>transmission_interface/SimpleTransmission</type>
-            <joint name="${name}_wheel_joint">
-                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-            </joint>
-            <actuator name="${name}_wheel_motor">
-                <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-                <mechanicalReduction>1</mechanicalReduction>
-            </actuator>
-        </transmission> -->
     </xacro:macro>
     <xacro:macro name="door"
         params="
