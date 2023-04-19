@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 
 <robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
-    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_joints.xacro" />
-    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_control.xacro" />
+    <xacro:include
+        filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_joints.xacro" />
+    <xacro:include
+        filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_control.xacro" />
+    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/cameras.xacro" />
     <xacro:property name="robot_namespace" value="/deliverybot" />
 
     <!-- Gazebo Plugins -->
@@ -34,8 +37,8 @@
     <xacro:property name="steer_mass" value="1" />
 
     <!-- Velocity and Movement -->
-    <xacro:property name="velocity_limlow" value="-5.0"/>
-    <xacro:property name="velocity_limhigh" value="8.0"/> 
+    <xacro:property name="velocity_limlow" value="-5.0" />
+    <xacro:property name="velocity_limhigh" value="8.0" />
 
     <!-- Axle Positions -->
     <xacro:property name="axle_offset" value="0.125" />
@@ -45,15 +48,17 @@
     <!-- Base Link -->
     <link name="base_link">
         <visual>
-            <origin xyz="0 0 0.40" rpy="0 0 -1.57" />
+            <origin xyz="0 0 0.325" rpy="0 0 -1.57" />
             <geometry>
-                <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
+                <mesh
+                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body_new.dae" />
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0.40" rpy="0 0 -1.57" />
             <geometry>
-                <mesh filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
+                <mesh
+                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body_new.dae" />
             </geometry>
         </collision>
         <inertial>
@@ -105,7 +110,8 @@
         model_rotate="1.57">
         <origin xyz="0 0 0" rpy="${-90 * deg_to_rad} 0 0" />
     </xacro:front_wheel_lr>
-    <!--Rear Wheels -->
+    <!--Rear
+    Wheels -->
     <xacro:rear_wheel_lr
         name="rear_right"
         parent="base"
@@ -136,6 +142,36 @@
         name="door"
         parent="base">
     </xacro:door>
+
+    <!-- RGB and Depth Cameras -->
+    <xacro:rgb_camera
+        name="front"
+        parent="base_link"
+        orientation="${90 * deg_to_rad}"
+        mirror = "1">
+        <origin xyz="0.39875 0 0.575" rpy="0 0 0" />
+    </xacro:rgb_camera>
+    <xacro:rgb_camera
+        name="rear"
+        parent="base_link"
+        orientation="${-90 * deg_to_rad}"
+        mirror = "-1">
+        <origin xyz="-0.39875 0 0.575" rpy="0 0 ${180 * deg_to_rad}" />
+    </xacro:rgb_camera>
+    <xacro:depth_camera
+        name="front"
+        parent="base_link"
+        orientation="0"
+        mirror = "-1">
+        <origin xyz="0.39875 0 0.575" rpy="0 0 0" />
+    </xacro:depth_camera>
+    <xacro:depth_camera
+        name="rear"
+        parent="base_link"
+        orientation="${-90 * deg_to_rad}"
+        mirror = "-1">
+        <origin xyz="-0.39875 0 0.575" rpy="0 0 ${180 * deg_to_rad}" />
+    </xacro:depth_camera>
     <ros2_control name="GazeboSystem" type="system">
         <hardware>
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -155,18 +191,18 @@
         <xacro:velocity_control
             name="rear_left"
             velocity_limlow="${velocity_limlow}"
-            velocity_limhigh="${velocity_limhigh}"/>
+            velocity_limhigh="${velocity_limhigh}" />
         <xacro:velocity_control
             name="rear_right"
             velocity_limlow="${velocity_limlow}"
-            velocity_limhigh="${velocity_limhigh}"/>
+            velocity_limhigh="${velocity_limhigh}" />
         <xacro:velocity_control
             name="front_right"
             velocity_limlow="${velocity_limlow}"
-            velocity_limhigh="${velocity_limhigh}"/>
+            velocity_limhigh="${velocity_limhigh}" />
         <xacro:velocity_control
             name="front_left"
             velocity_limlow="${velocity_limlow}"
-            velocity_limhigh="${velocity_limhigh}"/>
+            velocity_limhigh="${velocity_limhigh}" />
     </ros2_control>
 </robot>
