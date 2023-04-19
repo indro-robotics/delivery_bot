@@ -63,7 +63,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         arguments=['-d', os.path.join(get_package_share_directory(
-            'deliverybot_description'), 'rviz', 'eva_simulation.rviz')]
+            'deliverybot_description'), 'rviz', 'deliverybot_simulation.rviz')]
     )
     spawn_deliverybot_node = Node(
         package='deliverybot_description',
