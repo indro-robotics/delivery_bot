@@ -2,13 +2,15 @@
 
 <robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
     <xacro:macro
-        name="rgb_camera"
+        name="realsense_camera"
         params="
         name
         parent
         orientation
         mirror
         *origin">
+
+        <!-- Visual Component -->
         <link name="${name}_rgb_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 ${orientation}" />
@@ -51,7 +53,7 @@
                     <image>
                         <width>1280</width>
                         <height>720</height>
-                        <format>R8G8B8</format>
+                        <format>B8G8R8</format>
                     </image>
                     <clip>
                         <near>0.011</near>
@@ -67,12 +69,82 @@
                     <alwaysOn>true</alwaysOn>
                     <updateRate>0.0</updateRate>
                     <cameraName>${name}_rgb_camera</cameraName>
-                    <frameName>${name}_rgb_link_optical</frameName>
+                    <frame_name>${name}_rgb_link_optical</frame_name>
                   </plugin>
             </sensor>
         </gazebo>
+
+        <!-- Depth Component -->
+        <link name="${name}_depth_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 ${orientation}" />
+                <geometry>
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/IntelRealsense.dae" scale="0.1 0.1 0.1" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 ${orientation}" />
+                <geometry>
+                    <mesh
+                        filename="package://deliverybot_description/models/deliverybot/meshes/IntelRealsense.dae" scale="0.1 0.1 0.1" />
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 ${orientation}" />
+                <mass value="0.1" />
+                <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.005" />
+            </inertial>
+        </link>
+        <link name="${name}_depth_link_optical" />
+        <joint name="${name}_depth_joint" type="fixed">
+            <parent link="${parent}" />
+            <child link="${name}_depth_link" />
+            <xacro:insert_block name="origin" />
+        </joint>
+        <joint name="${name}_depth_joint_optical" type="fixed">
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+            <parent link="${name}_depth_link" />
+            <child link="${name}_depth_link_optical" />
+        </joint>
+        <gazebo reference="${name}_depth_link">
+            <sensor type="depth" name="${name}_depth_camera">
+                <visualize>true</visualize>
+                <update_rate>10.0</update_rate>
+                <always_on>true</always_on>
+                <pose>0 0 0 0 0 0</pose>
+                <camera name="${name}_depth_camera">
+                    <horizontal_fov>1.487021</horizontal_fov>
+                    <image>
+                        <width>424</width>
+                        <height>240</height>
+                        <format>B8G8R8</format>
+                    </image>
+                    <clip>
+                        <near>0.5</near>
+                        <far>8</far>
+                    </clip> 
+                </camera>
+                <plugin name="${name}_depth_controller" filename="libgazebo_ros_camera.so">
+                    <ros>
+                        <namespace>d430</namespace>
+                        <remapping>${name}_depth/image_raw:=color/image_raw</remapping>
+                        <remapping>${name}_depth/depth/image:=depth/image_rect_raw</remapping>
+                        <remapping>${name}_depth/camera_info:=camera_info</remapping>
+                        <remapping>${name}_depth/depth/camera_info:=depth/camera_info</remapping>
+                        <remapping>${name}_depth/points:=depth/points</remapping>
+                    </ros>
+                    <frame_name>${name}_depth_link_optical</frame_name>
+                    <cameraName>${name}_depth_camera</cameraName>
+                    <hack_baseline>0.07</hack_baseline>
+                    <min_depth>0.05</min_depth>
+                    <max_depth>8.0</max_depth>
+                  </plugin>
+            </sensor>
+        </gazebo>
+
     </xacro:macro>
-    <xacro:macro
+    <!-- <xacro:macro
         name="depth_camera"
         params="
         name
@@ -147,5 +219,5 @@
                   </plugin>
             </sensor>
         </gazebo>
-    </xacro:macro>
+    </xacro:macro> -->
 </robot>
