@@ -43,19 +43,19 @@ def generate_launch_description():
     )
 
     # Visualization
-    rviz2_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', os.path.join(get_package_share_directory(
-            'deliverybot_description'), 'rviz', 'slam_simulation.rviz')]
-    )
+    # rviz2_node = Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz2',
+    #     arguments=['-d', os.path.join(get_package_share_directory(
+    #         'deliverybot_description'), 'rviz', 'slam_simulation.rviz')]
+    # )
 
     # Robot
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)
 
     # Visualization
-    ld.add_action(rviz2_node)
+    #ld.add_action(rviz2_node)
 
     return ld

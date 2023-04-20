@@ -44,7 +44,8 @@
     <xacro:property name="axle_offset" value="0.125" />
     <xacro:property name="steer_offset" value="-0.15" />
     <!-- Dummy Link -->
-    <link name="base_footprint" />
+    <!-- <link name="base_footprint" /> -->
+    <!-- <link name="map" /> -->
     <!-- Base Link -->
     <link name="base_link">
         <visual>
@@ -68,11 +69,11 @@
         </inertial>
     </link>
     <!-- Dummy Joint -->
-    <joint name="base_link_joint" type="fixed">
-        <origin xyz="0 0 0" />
-        <parent link="base_footprint" />
-        <child link="base_link" />
-    </joint>
+    <!-- <joint name="base_link_joint" type="fixed">
+        <origin xyz="0 0 -0.15" />
+        <parent link="base_link" />
+        <child link="map" />
+    </joint> -->
 
     <!-- Steerable Front Wheels -->
     <xacro:front_wheel_lr

@@ -5,7 +5,7 @@ import sys
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
@@ -21,6 +21,9 @@ def generate_launch_description():
         pkg_deliverybot_gazebo, 'worlds','obstacle_simulation.sdf')
 
     ld = LaunchDescription()
+
+    sim_time = DeclareLaunchArgument(
+        '/use_sim_time', default_value='true')
     
     spawn_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -57,6 +60,9 @@ def generate_launch_description():
         executable='deliverybot_control',
         output='screen',
     )
+
+    #Adding arguments
+    ld.add_action(sim_time)
 
     # Launching Gazebo Server
     ld.add_action(gzserver_launch)
