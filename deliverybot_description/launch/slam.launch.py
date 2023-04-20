@@ -6,6 +6,8 @@ import xacro
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
@@ -13,6 +15,8 @@ def generate_launch_description():
     pkg_deliverybot_description = get_package_share_directory(
         'deliverybot_description')
 
+    pkg_deliverybot_control = get_package_share_directory(
+        'deliverybot_control')
     # Creating Launch Description
     ld = LaunchDescription()
 
@@ -42,6 +46,10 @@ def generate_launch_description():
         output='screen',
     )
 
+    slam_simulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_control, '/launch/rtabmap.launch.py']),
+    )
     # Visualization
     # rviz2_node = Node(
     #     package='rviz2',
@@ -54,6 +62,7 @@ def generate_launch_description():
     # Robot
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)
+    ld.add_action(slam_simulation_launch)
 
     # Visualization
     #ld.add_action(rviz2_node)
