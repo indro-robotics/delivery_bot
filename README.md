@@ -30,11 +30,18 @@ source install/setup.bash
 ```
 
 ## Run
-By default, the simulation with launch Gazebo and RVIZ at boot, this can be changed in the launch file as needed. 
+Currently, there are two Simulation modes available. The `teleop_only` mode, where the deliverybot acts as a remote controlled vehicle. It will subscribe to `cmd_vel` and drive around it's world using teleop.
 
-Start the simulation:
+The second mode is the `SLAM` mode, where simulated *Intel Realsense D435* cameras generate depth data to be used in mapping. `SLAM` mode also creates RGB camera feeds visible in RVIZ.
 
-`ros2 launch deliverybot_gazebo simulation.launch.py`
+By default, the simulation will launch into `SLAM` mode. To launch the simulation use the command.
+``` bash
+ros2 launch deliverybot_gazebo simulation.launch.py
+```
+To launch the simulation in `teleop_only` mode, pass the `teleop_only` parameter to the launch file.
+``` bash
+ros2 launch deliverybot_gazebo simulation.launch.py teleop_only:=true
+```
 
 The robot is controlled through `/cmd_vel`, commands can be sent through the terminal or through the teleop keyboard:
 
