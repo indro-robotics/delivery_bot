@@ -5,7 +5,7 @@
         filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_joints.xacro" />
     <xacro:include
         filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot_control.xacro" />
-    <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/cameras.xacro" />
+    <!-- <xacro:include filename="$(find deliverybot_description)/models/deliverybot/xacro/cameras.xacro" /> -->
     <xacro:property name="robot_namespace" value="/deliverybot" />
 
     <!-- Gazebo Plugins -->
@@ -143,7 +143,7 @@
         parent="base">
     </xacro:door>
 
-    <!-- RGB and Depth Cameras -->
+    <!-- Realsense Camera
     <xacro:realsense_camera
         name="front"
         parent="base_link"
@@ -157,7 +157,7 @@
         orientation="${90 * deg_to_rad}"
         mirror = "-1">
         <origin xyz="-0.39875 0 0.575" rpy="0 0 ${180 * deg_to_rad}" />
-    </xacro:realsense_camera>
+    </xacro:realsense_camera> -->
     <!-- <xacro:depth_camera
         name="front"
         parent="base_link"
