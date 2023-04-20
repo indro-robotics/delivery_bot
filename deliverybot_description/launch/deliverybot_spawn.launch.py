@@ -6,15 +6,14 @@ import sys
 from ament_index_python.packages import get_package_share_directory
 from ament_index_python.packages import get_package_prefix
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch_ros.actions import Node
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
-import xacro
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-
     # Getting Installation Directorys
     pkg_deliverybot_description = get_package_share_directory(
         'deliverybot_description')
@@ -32,91 +31,61 @@ def generate_launch_description():
     else:
         os.environ['GAZEBO_PLUGIN_PATH'] = install_dir + '/lib'
 
-    # Acquiring robot description XACRO file
-    xacro_file = os.path.join(
-        pkg_deliverybot_description, 'models/deliverybot/xacro', 'deliverybot.xacro')
-    assert os.path.exists(
-        xacro_file), "The deliverybot.xacro doesn't exist in " + str(xacro_file)
-
-    robot_description_config = xacro.process_file(xacro_file)
-    robot_description = robot_description_config.toxml()
-    robot_description_param = {'robot_description' : robot_description}
-    #robot_description = {'robot_description': robot_description_xml}
-
-    # FROM ONLINE TUTORIAL TEST
-    controllers_file = os.path.join(
-        pkg_deliverybot_description, 'models/deliverybot/config', 'controllers.yaml')
-
-    # Arguments
+    # Creating Launch Description
     ld = LaunchDescription()
 
-    robot_state_publisher_node = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        #parameters=[robot_description],
-        parameters=[robot_description_param],
+    # Declaring Arguments and Configurations
+    teleop_only = LaunchConfiguration('teleop_only')
+
+    teleop_arg = DeclareLaunchArgument(
+        'teleop_only', default_value='false', description='Launching simulation in teleop only mode')
+
+    # Launching Simulation Type
+    slam_simulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_description, '/launch/slam.launch.py']),
+        condition=UnlessCondition(teleop_only)
+    )
+    teleop_simulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_description, '/launch/teleop.launch.py']),
+        condition=IfCondition(teleop_only)
     )
 
-    rviz2_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', os.path.join(get_package_share_directory(
-            'deliverybot_description'), 'rviz', 'deliverybot_simulation.rviz')]
-    )
-    spawn_deliverybot_node = Node(
-        package='deliverybot_description',
-        executable='spawn_deliverybot',
-        arguments=[robot_description],
-        output='screen',
-    )
-
-    sim_time_argument = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true',
-    )
-
+    # Spawning Controllers
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster",
                    "--controller-manager", "/controller_manager"],
     )
-
     forward_position_controller = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["steering_trajectory_controller",
                    "--controller-manager", "/controller_manager"],
     )
-
     forward_velocity_controller = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["forward_velocity_controller",
                    "--controller-manager", "/controller_manager"],
     )
-
     door_position_controller = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["door_position_controller",
                    "--controller-manager", "/controller_manager"],
     )
+
     # Arguments
-    ld.add_action(sim_time_argument)
-    # Robot States
-    ld.add_action(robot_state_publisher_node)
+    ld.add_action(teleop_arg)
 
-    # ld.add_action(joints_state_publisher_node)
+    # Simulation Type
+    ld.add_action(slam_simulation_launch)
+    ld.add_action(teleop_simulation_launch)
 
-    # Robot Visualization
-    ld.add_action(rviz2_node)
-    ld.add_action(spawn_deliverybot_node)
-    # Load Controllers
-
+    # Controllers
     ld.add_action(joint_state_broadcaster)
     ld.add_action(forward_position_controller)
     ld.add_action(forward_velocity_controller)
