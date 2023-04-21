@@ -22,7 +22,6 @@ def generate_launch_description():
     
     ld = LaunchDescription()
 
-
     # Acquiring robot description XACRO file
     xacro_file = os.path.join(
         pkg_deliverybot_description, 'models/deliverybot/xacro', 'deliverybot.xacro')
@@ -37,7 +36,6 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
-        #parameters=[robot_description],
         parameters=[robot_description_param],
     )
 

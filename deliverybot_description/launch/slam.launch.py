@@ -17,7 +17,7 @@ def generate_launch_description():
 
     pkg_deliverybot_control = get_package_share_directory(
         'deliverybot_control')
-    # Creating Launch Description
+    # Creating Launch Descriptions
     ld = LaunchDescription()
 
     # Acquiring robot description XACRO file
@@ -35,7 +35,6 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
-        # parameters=[robot_description],
         parameters=[robot_description_param],
     )
 
@@ -50,21 +49,10 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [pkg_deliverybot_control, '/launch/rtabmap.launch.py']),
     )
-    # Visualization
-    # rviz2_node = Node(
-    #     package='rviz2',
-    #     executable='rviz2',
-    #     name='rviz2',
-    #     arguments=['-d', os.path.join(get_package_share_directory(
-    #         'deliverybot_description'), 'rviz', 'slam_simulation.rviz')]
-    # )
 
     # Robot
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)
     ld.add_action(slam_simulation_launch)
-
-    # Visualization
-    #ld.add_action(rviz2_node)
 
     return ld
