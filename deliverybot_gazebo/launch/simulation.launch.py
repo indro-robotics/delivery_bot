@@ -23,7 +23,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     sim_time = DeclareLaunchArgument(
-        '/use_sim_time', default_value='true')
+        'use_sim_time', default_value='true')
     
     spawn_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

@@ -31,7 +31,7 @@ setup(
     name=package_name,
     version='0.0.0',
     packages=[package_name],
-    data_files=package_files(data_files, ['launch/', 'rviz/']),
+    data_files=package_files(data_files, ['launch/', 'rviz/', 'config/']),
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='liamd',

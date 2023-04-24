@@ -32,9 +32,11 @@ def generate_launch_description():
     approx_sync = DeclareLaunchArgument(
         'approx_sync', default_value='true')
     rtabmap_viz = DeclareLaunchArgument(
-        'rtabmapviz', default_value='true')
+        'rtabmapviz', default_value='false')
     rviz = DeclareLaunchArgument(
         'rviz', default_value='false')
+    sim_time = DeclareLaunchArgument(
+        'use_sim_time', default_value='true')
 
     ld.add_action(rtabmap_args)
     ld.add_action(depth_topic)
@@ -43,6 +45,7 @@ def generate_launch_description():
     ld.add_action(approx_sync)
     ld.add_action(rtabmap_viz)
     ld.add_action(rviz)
+    ld.add_action(sim_time)
 
     rtabmap_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

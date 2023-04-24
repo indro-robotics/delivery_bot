@@ -6,7 +6,13 @@ import xacro
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch_ros.substitutions import FindPackageShare
+
+from launch.substitutions import (
+    LaunchConfiguration,
+    PathJoinSubstitution
+)
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
@@ -17,6 +23,8 @@ def generate_launch_description():
 
     pkg_deliverybot_control = get_package_share_directory(
         'deliverybot_control')
+    
+    pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
     # Creating Launch Descriptions
     ld = LaunchDescription()
 
@@ -49,6 +57,35 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [pkg_deliverybot_control, '/launch/rtabmap.launch.py']),
     )
+    robot_localization_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_control, '/launch/robot_localization.launch.py']
+        )
+    )
+
+    # navigation_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         [pkg_nav2_bringup, '/launch/navigation_launch.py']
+    #     )
+    # )
+
+    navigation_launch = ExecuteProcess(
+        name="launch_navigation",
+        cmd=[
+            "ros2",
+            "launch",
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("nav2_bringup"),
+                    "launch",
+                    "navigation_launch.py",
+                ]
+            ),
+            "use_sim_time:=True"
+        ],
+        output="screen"
+
+    )
     joint_state_publisher_node = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -59,5 +96,7 @@ def generate_launch_description():
     ld.add_action(spawn_deliverybot_node)
     ld.add_action(slam_simulation_launch)
     #ld.add_action(joint_state_publisher_node)
+    ld.add_action(robot_localization_launch)
+    ld.add_action(navigation_launch)
 
     return ld

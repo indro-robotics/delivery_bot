@@ -46,7 +46,6 @@
     <xacro:property name="steer_offset" value="-0.15" />
     <!-- Dummy Link -->
     <link name="base_footprint" />
-    <!-- <link name="map" /> -->
     <!-- Base Link -->
     <link name="base_link">
         <visual>
