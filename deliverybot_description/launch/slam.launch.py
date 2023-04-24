@@ -49,10 +49,15 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [pkg_deliverybot_control, '/launch/rtabmap.launch.py']),
     )
-
+    joint_state_publisher_node = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher'
+    )
     # Robot
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)
     ld.add_action(slam_simulation_launch)
+    #ld.add_action(joint_state_publisher_node)
 
     return ld

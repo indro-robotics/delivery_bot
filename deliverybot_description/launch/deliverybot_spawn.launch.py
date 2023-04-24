@@ -52,6 +52,13 @@ def generate_launch_description():
         condition=IfCondition(teleop_only)
     )
 
+    #Launching Joystick Node
+    joy_node = Node(
+        package='joy',
+        executable='joy_node',
+        name='joy_node'
+    )
+
     # Spawning Controllers
     joint_state_broadcaster = Node(
         package="controller_manager",
@@ -84,6 +91,9 @@ def generate_launch_description():
     # Simulation Type
     ld.add_action(slam_simulation_launch)
     ld.add_action(teleop_simulation_launch)
+
+    #Joystick Node
+    ld.add_action(joy_node)
 
     # Controllers
     ld.add_action(joint_state_broadcaster)

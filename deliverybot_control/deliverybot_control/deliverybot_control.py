@@ -15,14 +15,15 @@ from sensor_msgs.msg import JointState
 
 
 vel_msg = Twist()
-
+A_button = 0
+B_button = 0
 
 class DeliverybotControlNode(Node):
     def __init__(self):
         super().__init__('deliverybot_control')
 
         # Declaring variables
-        timer_period = 0.02
+        timer_period = 0.1
         self.base_length = 0.75
         self.base_width = 0.30
         self.vel_msg_prev = 0.0
@@ -31,6 +32,10 @@ class DeliverybotControlNode(Node):
         self.vel = np.array([0, 0, 0, 0], float)  # RR, RL, FR, FL
         self.door_pos_prev = np.array([0], float)
         self.steer_pos_prev = np.array([0, 0], float)
+
+
+        self.A_button_prev = 0
+        self.B_button_prev = 0
 
         # Creating Publishers
         self.pub_vel_ = self.create_publisher(
@@ -54,7 +59,6 @@ class DeliverybotControlNode(Node):
     def theta_out(self, delta_ack):
         """
         Determines the ackermann steering angle of the outer wheel
-
         :param delta_ack: goal steering angle of virtual center wheel
         :return: ackermann steering angle of outer wheel theta_out
         """
@@ -63,7 +67,6 @@ class DeliverybotControlNode(Node):
     def theta_in(self, delta_ack):
         """
         Determines the ackermann steering angle of the inner wheel
-
         :param delta_ack: goal steering angle of virtual center wheel
         :return: ackermann steering angle of inner wheel theta_out
         """
@@ -73,30 +76,11 @@ class DeliverybotControlNode(Node):
         global vel_msg
 
         sign = np.sign(vel_msg.linear.x)
-        if vel_msg.angular.z > 0:
-            self.vel[0] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
-            self.vel[1] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
-            self.vel[2] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
-            self.vel[3] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
-        if vel_msg.angular.z < 0:
-            self.vel[0] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
-            self.vel[1] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
-            self.vel[2] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[0])))
-            self.vel[3] = sign * np.abs(vel_msg.linear.x *
-                                        (np.sin(vel_msg.angular.z) / np.sin(self.steer_pos[1])))
-        if vel_msg.angular.z == 0:
-            self.vel[0] = vel_msg.linear.x
-            self.vel[1] = vel_msg.linear.x
-            self.vel[2] = vel_msg.linear.x
-            self.vel[3] = vel_msg.linear.x
 
+        self.vel[0] = vel_msg.linear.x
+        self.vel[1] = vel_msg.linear.x
+        self.vel[2] = vel_msg.linear.x
+        self.vel[3] = vel_msg.linear.x
         vel_array = Float64MultiArray(data=self.vel)
 
         self.pub_vel_.publish(vel_array)
@@ -112,6 +96,16 @@ class DeliverybotControlNode(Node):
             float(joint_positions[0]), float(joint_positions[1])]
         if np.abs(np.sum(self.steer_pos_prev)) < 0.004:
             self.steer_pos_prev = [0.0, 0.0]
+
+        if A_button != self.A_button_prev:
+            self.get_logger().info('Door Toggled.')
+            self.send_door_goal()
+
+        if B_button != self.B_button_prev:
+            self.get_logger().info('Door Toggled.')
+            self.send_door_goal()
+
+
         if vel_msg.linear.z != self.vel_msg_prev:
             self.get_logger().info('Door Toggled.')
             self.send_door_goal()
@@ -129,18 +123,25 @@ class DeliverybotControlNode(Node):
         :returns: nothing - calls on action server
         '''
         global vel_msg
+        global A_button
+        global B_button
+
+        self.A_button_prev = A_button
+        self.B_button_prev = B_button
         self.vel_msg_prev = vel_msg.linear.z
         goal_msg = FollowJointTrajectory.Goal()
         points = []
         point1 = JointTrajectoryPoint()
         point1.positions = self.door_pos_prev
-
-        if vel_msg.linear.z > 0:
-            door_pos = [-1.5708]
-        if vel_msg.linear.z < 0:
+        
+        ### NEW ###
+        if A_button == 1:
+            door_pos = [1.5708]
+        if B_button == 1:
             door_pos = [0.0]
-        if vel_msg.linear.z == 0:
+        if A_button == 0 and B_button == 0:
             door_pos = self.door_pos_prev
+
 
         norm_coeff = np.abs(door_pos[0] - self.door_pos_prev[0]) / 1.5708
         if norm_coeff == 0:
@@ -178,7 +179,6 @@ class DeliverybotControlNode(Node):
         goal_msg = FollowJointTrajectory.Goal()
         # Creating timing normalizer for duration of movement
         norm_coeff = np.abs(steer_msg-self.steer_msg_prev) / 0.61085
-        print(norm_coeff)
         steer_time = norm_coeff * 0.5  # 1.5 seconds to move from straight to max turn
         self.steer_msg_prev = steer_msg
 
@@ -247,10 +247,13 @@ class JoySubscriberNode(Node):
 
     def listener_callback(self, data):
         global vel_msg
-
-        vel_msg.linear.x = data.axes[1]*7.5
-        vel_msg.linear.y = data.axes[0]*7.5
-        vel_msg.angular.z = data.axes[3]*10
+        global A_button
+        global B_button
+        vel_msg.linear.x = data.axes[1]*5
+        #vel_msg.linear.y = data.axes[0]*7.5
+        vel_msg.angular.z = data.axes[3]*0.610865
+        A_button = data.buttons[0]
+        B_button = data.buttons[1]
 
 class CmdVelSubscriberNode(Node):
 
@@ -272,10 +275,12 @@ def main(args=None):
 
     deliverybotControl = DeliverybotControlNode()
     cmdVelSubscriber = CmdVelSubscriberNode()
+    joySubscriber = JoySubscriberNode()
 
     executor = rclpy.executors.MultiThreadedExecutor()
     executor.add_node(deliverybotControl)
     executor.add_node(cmdVelSubscriber)
+    executor.add_node(joySubscriber)
 
     executor_thread = threading.Thread(target=executor.spin, daemon=True)
     executor_thread.start()
