@@ -24,7 +24,6 @@ def generate_launch_description():
     pkg_deliverybot_control = get_package_share_directory(
         'deliverybot_control')
     
-    pkg_nav2_bringup = get_package_share_directory('nav2_bringup')
     # Creating Launch Descriptions
     ld = LaunchDescription()
 
@@ -63,11 +62,6 @@ def generate_launch_description():
         )
     )
 
-    # navigation_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         [pkg_nav2_bringup, '/launch/navigation_launch.py']
-    #     )
-    # )
 
     navigation_launch = ExecuteProcess(
         name="launch_navigation",
@@ -86,16 +80,13 @@ def generate_launch_description():
         output="screen"
 
     )
-    joint_state_publisher_node = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher'
-    )
+
     # Robot
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)
+
+    #Simulation
     ld.add_action(slam_simulation_launch)
-    #ld.add_action(joint_state_publisher_node)
     ld.add_action(robot_localization_launch)
     ld.add_action(navigation_launch)
 

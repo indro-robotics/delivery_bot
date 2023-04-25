@@ -58,7 +58,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         arguments=['-d', os.path.join(get_package_share_directory(
-            'deliverybot_control'), 'rviz', 'rtabmap.rviz')]
+            'deliverybot_control'), 'rviz', 'slam.rviz')]
     )
     # Visualization
     ld.add_action(rtabmap_launch)

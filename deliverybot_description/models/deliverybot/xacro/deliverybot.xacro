@@ -52,14 +52,14 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
                 <mesh
-                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body_new.dae" />
+                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
                 <mesh
-                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body_new.dae" />
+                    filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Body.dae" />
             </geometry>
         </collision>
         <inertial>

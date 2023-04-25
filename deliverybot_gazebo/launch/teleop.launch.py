@@ -51,7 +51,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         arguments=['-d', os.path.join(get_package_share_directory(
-            'deliverybot_description'), 'rviz', 'teleop_simulation.rviz')]
+            'deliverybot_control'), 'rviz', 'teleop.rviz')]
     )
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)

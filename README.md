@@ -48,3 +48,5 @@ The robot is controlled through `/cmd_vel`, commands can be sent through the ter
 `ros2 launch teleop_twist_keyboard teleop_twist_keyboard`
 
 This will allow keyboard control of the robot. The `t`, `b`, and `g` keys command the door.
+
+The robot can also be controlled through a `joystick`. The joystick node is automatically started at boot, simply plug in a compatible controller (PlayStation, XBox, etc.) and use the `LEFT_STICK` forward-backward for drive and reverse commands, and the `RIGHT_STICK` left-right for steer commands. 

@@ -17,6 +17,8 @@ def generate_launch_description():
     # Getting Installation Directorys
     pkg_deliverybot_description = get_package_share_directory(
         'deliverybot_description')
+    pkg_deliverybot_gazebo = get_package_share_directory(
+        'deliverybot_gazebo')
     install_dir = get_package_prefix('deliverybot_description')
 
     # Installing Gazebo Model and Plugin Paths
@@ -43,16 +45,16 @@ def generate_launch_description():
     # Launching Simulation Type
     slam_simulation_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [pkg_deliverybot_description, '/launch/slam.launch.py']),
+            [pkg_deliverybot_gazebo, '/launch/slam.launch.py']),
         condition=UnlessCondition(teleop_only)
     )
     teleop_simulation_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [pkg_deliverybot_description, '/launch/teleop.launch.py']),
+            [pkg_deliverybot_gazebo, '/launch/teleop.launch.py']),
         condition=IfCondition(teleop_only)
     )
 
-    #Launching Joystick Node
+    # Launching Joystick Node
     joy_node = Node(
         package='joy',
         executable='joy_node',
@@ -92,7 +94,7 @@ def generate_launch_description():
     ld.add_action(slam_simulation_launch)
     ld.add_action(teleop_simulation_launch)
 
-    #Joystick Node
+    # Joystick Node
     ld.add_action(joy_node)
 
     # Controllers
