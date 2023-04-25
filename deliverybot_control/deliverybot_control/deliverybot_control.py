@@ -32,8 +32,6 @@ class DeliverybotControlNode(Node):
         self.vel = np.array([0, 0, 0, 0], float)  # RR, RL, FR, FL
         self.door_pos_prev = np.array([0], float)
         self.steer_pos_prev = np.array([0, 0], float)
-
-
         self.A_button_prev = 0
         self.B_button_prev = 0
 
@@ -268,7 +266,6 @@ class CmdVelSubscriberNode(Node):
     def cmdVel_callback(self, data):
         global vel_msg
         vel_msg = data
-        # super().send_door_goal()
 
 def main(args=None):
     rclpy.init(args=None)
