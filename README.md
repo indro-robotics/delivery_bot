@@ -1,7 +1,7 @@
 # Deliverybot Simulation Environment
 Simulating the InDro Robotics Deliverybot, an Ackermann steering vehicle with controllable storage compartment, in gazebo using `gazebo_ros2_control` , `xacro`, and `controller_manager`.
 
-Simulation is run on `ubuntu_20.04` and `ROS2_Humble`.
+Simulation is run on `ubuntu_22.04` and `ROS2_Humble`.
 ## Installation
 ```bash
 # Create a workspace folder
