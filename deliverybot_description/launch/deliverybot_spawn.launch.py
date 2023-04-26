@@ -14,9 +14,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    # Getting Installation Directorys
-    pkg_deliverybot_description = get_package_share_directory(
-        'deliverybot_description')
+    # Getting Installation Directories
     pkg_deliverybot_gazebo = get_package_share_directory(
         'deliverybot_gazebo')
     install_dir = get_package_prefix('deliverybot_description')

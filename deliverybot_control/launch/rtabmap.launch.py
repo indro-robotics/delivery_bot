@@ -13,8 +13,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     # Getting Installation Directorys
-    pkg_deliverybot_description = get_package_share_directory(
-        'deliverybot_description')
     pkg_rtabmap = get_package_share_directory('rtabmap_ros')
 
     # Creating Launch Description

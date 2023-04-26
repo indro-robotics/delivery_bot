@@ -14,7 +14,6 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
     pkg_deliverybot_description = get_package_share_directory('deliverybot_description')
     pkg_deliverybot_gazebo = get_package_share_directory('deliverybot_gazebo')
     gazebo_world = os.path.join(
