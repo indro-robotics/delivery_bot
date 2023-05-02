@@ -28,10 +28,10 @@ class DeliverybotControlNode(Node):
         self.base_width = 0.30
         self.vel_msg_prev = 0.0
         self.steer_msg_prev = 0.0
-        self.steer_pos = np.array([0, 0], float)
+        self.steer_pos = np.array([0, 0, 0], float) #FR, FL, CENT
         self.vel = np.array([0, 0, 0, 0], float)  # RR, RL, FR, FL
         self.door_pos_prev = np.array([0], float)
-        self.steer_pos_prev = np.array([0, 0], float)
+        self.steer_pos_prev = np.array([0, 0, 0], float) #FR, FL, CENT
         self.A_button_prev = 0
         self.B_button_prev = 0
 
@@ -91,9 +91,9 @@ class DeliverybotControlNode(Node):
 
         self.door_pos_prev = [float(joint_positions[4])]
         self.steer_pos_prev = [
-            float(joint_positions[0]), float(joint_positions[1])]
+            float(joint_positions[0]), float(joint_positions[1]), float(joint_positions[2])]
         if np.abs(np.sum(self.steer_pos_prev)) < 0.004:
-            self.steer_pos_prev = [0.0, 0.0]
+            self.steer_pos_prev = [0.0, 0.0, 0.0]
 
         if A_button != self.A_button_prev:
             self.get_logger().info('Door Toggled.')
@@ -192,12 +192,12 @@ class DeliverybotControlNode(Node):
 
         if steer_msg > 0:
             self.steer_pos = [self.theta_in(
-                steer_msg), self.theta_out(steer_msg)]
+                steer_msg), self.theta_out(steer_msg), steer_msg]
         if steer_msg < 0:
             self.steer_pos = [self.theta_out(
-                steer_msg), self.theta_in(steer_msg)]
+                steer_msg), self.theta_in(steer_msg), steer_msg]
         if steer_msg == 0:
-            self.steer_pos = [0.0, 0.0]
+            self.steer_pos = [0.0, 0.0, 0.0]
 
         point2.positions = self.steer_pos
         points = [point1, point2]
@@ -205,7 +205,7 @@ class DeliverybotControlNode(Node):
         goal_msg.goal_time_tolerance = Duration(
             seconds=1, nanoseconds=0).to_msg()
         goal_msg.trajectory.joint_names = [
-            'front_right_steer_joint', 'front_left_steer_joint']
+            'front_right_steer_joint', 'front_left_steer_joint', 'center_steer_joint']
         goal_msg.trajectory.points = points
 
         self._action_steer_client.wait_for_server()

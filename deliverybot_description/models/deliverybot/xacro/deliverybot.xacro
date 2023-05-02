@@ -41,7 +41,7 @@
 
     <!-- Axle Positions -->
     <xacro:property name="axle_length_offset" value="0.125" />
-    <xacro:property name="axle_width_offset" value="0.1"/>
+    <xacro:property name="axle_width_offset" value="0.1" />
     <xacro:property name="steer_offset" value="-0.15" />
     <!-- Dummy Link -->
     <link name="base_footprint" />
@@ -69,11 +69,31 @@
     </link>
     <!-- Dummy Joint -->
     <joint name="base_joint" type="fixed">
-        <origin xyz="0 0 0.470" rpy="0 0 0"/>
+        <origin xyz="0 0 0.470" rpy="0 0 0" />
         <parent link="base_footprint" />
         <child link="base_link" />
     </joint>
 
+    <link name="center_steer_link">
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0" />
+            <mass value="${steer_mass}" />
+            <inertia
+                ixx="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
+                ixy="0.0" ixz="0.0"
+                iyy="${steer_mass * (3.0 * steer_radius * steer_radius + steer_thickness * steer_thickness) / 12.0}"
+                iyz="0.0"
+                izz="${steer_mass * (steer_radius * steer_radius) / 2.0}" />
+        </inertial>
+    </link>
+    <joint name="center_steer_joint" type="revolute">
+        <parent link="base_link" />
+        <child link="center_steer_link" />
+        <origin xyz="0 ${base_length/2 - axle_length_offset} -0.345" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
+        <limit effort="${steer_effort}" lower="${steer_limit_deg * deg_to_rad * -1.0}"
+            upper="${steer_limit_deg * deg_to_rad}" velocity="${steer_velocity}" />
+    </joint>
 
 
     <!-- Steerable Front Wheels -->
@@ -112,7 +132,8 @@
         steer_height="${wheel_radius+steer_offset}"
         model_rotate="0">
     </xacro:front_wheel_lr>
-    <!--Rear Wheels -->
+    <!--Rear
+    Wheels -->
     <xacro:rear_wheel_lr
         name="rear_right"
         parent="base"
@@ -156,6 +177,10 @@
             name="front_left"
             steer_limlow="${steer_limlow_deg * deg_to_rad}"
             steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
+        <xacro:steering_control
+            name="center"
+            steer_limlow="${steer_limlow_deg * deg_to_rad}"
+            steer_limhigh="${steer_limhigh_deg * deg_to_rad}" />
         <xacro:door_control
             name="door"
             door_limlow="${0 * deg_to_rad}"
@@ -175,6 +200,6 @@
         <xacro:velocity_control
             name="front_left"
             velocity_limlow="${velocity_limlow}"
-            velocity_limhigh="${velocity_limhigh}" /> 
+            velocity_limhigh="${velocity_limhigh}" />
     </ros2_control>
 </robot>

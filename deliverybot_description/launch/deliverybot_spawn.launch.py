@@ -43,7 +43,7 @@ def generate_launch_description():
     # Launching Simulation Type
     slam_simulation_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [pkg_deliverybot_gazebo, '/launch/slam.launch.py']),
+            [pkg_deliverybot_gazebo, '/launch/nav2.launch.py']),
         condition=UnlessCondition(teleop_only)
     )
     teleop_simulation_launch = IncludeLaunchDescription(

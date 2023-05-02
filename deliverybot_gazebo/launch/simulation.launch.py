@@ -62,7 +62,6 @@ def generate_launch_description():
 
     #Adding arguments
     ld.add_action(sim_time)
-
     # Launching Gazebo Server
     ld.add_action(gzserver_launch)
     # Launching Gazebo Client

@@ -23,6 +23,7 @@
         axle_width_offset
         steer_height
         model_rotate">
+
         <link name="${name}_steer_link">
             <inertial>
                 <origin rpy="0 0 0" xyz="0 0 0" />

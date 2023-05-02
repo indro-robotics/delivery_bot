@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<robot name="deliverybot" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:include
+        filename="$(find deliverybot_description)/models/deliverybot/xacro/deliverybot.xacro" />
+    <xacro:include
+        filename="$(find deliverybot_description)/models/deliverybot/xacro/sensors.xacro" />
+
+    <!-- Realsense Camera -->
+    <xacro:realsense_camera
+        name="front"
+        parent="base_link"
+        orientation="${90 * deg_to_rad}"
+        mirror="-1">
+        <origin xyz="0 0.39875 0.25250" rpy="0 0 ${90*deg_to_rad}" />
+    </xacro:realsense_camera>
+    <xacro:realsense_camera
+        name="rear"
+        parent="base_link"
+        orientation="${90 * deg_to_rad}"
+        mirror="1">
+        <origin xyz="0 -0.39875 0.25250" rpy="0 0 ${-90 * deg_to_rad}" />
+    </xacro:realsense_camera>
+    <xacro:lidar
+        name="top"
+        parent="base_link" />
+</robot>
