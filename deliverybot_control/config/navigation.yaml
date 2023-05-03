@@ -1,8 +1,8 @@
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 1.0
-      publish_frequency: 1.0
+      update_frequency: 2.0
+      publish_frequency: 2.0
       global_frame: map
       robot_base_frame: base_footprint
       use_sim_time: True
@@ -28,16 +28,16 @@ global_costmap:
           raytrace_min_range: 0.0
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
-        # pointcloud:
-        #   topic: /front_depth_camera/points
-        #   data_type: "PointCloud2"
-        #   max_obstacle_height: 2.0
-        #   clearing: True
-        #   marking: True
-        #   raytrace_max_range: 3.0
-        #   raytrace_min_range: 0.0
-        #   obstacle_max_range: 2.5
-        #   obstacle_min_range: 0.012
+        pointcloud:
+          topic: /d430/front_depth_camera/points
+          data_type: "PointCloud2"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.012
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
@@ -56,7 +56,7 @@ local_costmap:
       width: 3
       height: 3
       resolution: 0.05
-      robot_radius: 0.22
+      robot_radius: 0.45
       plugins: ["voxel_layer", "inflation_layer"]
       voxel_layer: 
         plugin: "nav2_costmap_2d::VoxelLayer"
@@ -74,12 +74,12 @@ local_costmap:
           clearing: True
           marking: True
           data_type: "LaserScan"
-        # pointcloud:
-        #   topic: /front_depth_camera/points
-        #   data_type: "PointCloud2"
-        #   max_obstacle_height: 2.0
-        #   clearing: True
-        #   marking: True
+        pointcloud:
+          topic: /d430/front_depth_camera/points
+          data_type: "PointCloud2"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0

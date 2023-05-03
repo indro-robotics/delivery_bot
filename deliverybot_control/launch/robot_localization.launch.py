@@ -23,7 +23,7 @@ def generate_launch_description():
                                               description='Flag to enable use_sim_time')
 
     slam_params_file = DeclareLaunchArgument(
-        'slam_params_file', default_value=str(os.path.join(deliverybot_control_pkg, 'config', 'navigation.yaml')))
+        'slam_params_file', default_value=str(os.path.join(deliverybot_control_pkg, 'config', 'slam_toolbox.yaml')))
 
     ld.add_action(slam_params_file)
 
@@ -41,7 +41,7 @@ def generate_launch_description():
             [slam_toolbox_pkg, '/launch/online_sync_launch.py']),
     )
 
-    ld.add_action(slam_params_file)
+    #ld.add_action(slam_params_file)
     ld.add_action(slam_toolbox_launch)
     ld.add_action(sim_time_argument)
     ld.add_action(robot_localization_node)
