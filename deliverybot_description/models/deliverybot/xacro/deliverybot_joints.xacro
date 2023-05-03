@@ -173,7 +173,7 @@
                 <origin rpy="0 0 0" xyz="-0.002550 0.400 0.01750" />
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="0 0.400 0.01750" />
+                <origin rpy="0 0 0" xyz="-0.002550 0.400 0.01750" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />

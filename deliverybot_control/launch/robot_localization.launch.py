@@ -38,10 +38,10 @@ def generate_launch_description():
 
     slam_toolbox_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            [slam_toolbox_pkg, '/launch/online_sync_launch.py']),
+            [slam_toolbox_pkg, '/launch/online_async_launch.py']),
     )
 
-    #ld.add_action(slam_params_file)
+    ld.add_action(slam_params_file)
     ld.add_action(slam_toolbox_launch)
     ld.add_action(sim_time_argument)
     ld.add_action(robot_localization_node)

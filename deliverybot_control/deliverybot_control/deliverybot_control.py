@@ -18,6 +18,7 @@ vel_msg = Twist()
 A_button = 0
 B_button = 0
 
+
 class DeliverybotControlNode(Node):
     def __init__(self):
         super().__init__('deliverybot_control')
@@ -28,10 +29,10 @@ class DeliverybotControlNode(Node):
         self.base_width = 0.30
         self.vel_msg_prev = 0.0
         self.steer_msg_prev = 0.0
-        self.steer_pos = np.array([0, 0, 0], float) #FR, FL, CENT
+        self.steer_pos = np.array([0, 0, 0], float)  # FR, FL, CENT
         self.vel = np.array([0, 0, 0, 0], float)  # RR, RL, FR, FL
         self.door_pos_prev = np.array([0], float)
-        self.steer_pos_prev = np.array([0, 0, 0], float) #FR, FL, CENT
+        self.steer_pos_prev = np.array([0, 0, 0], float)  # FR, FL, CENT
         self.A_button_prev = 0
         self.B_button_prev = 0
 
@@ -40,7 +41,7 @@ class DeliverybotControlNode(Node):
             Float64MultiArray, '/forward_velocity_controller/commands', 10)
         self.timer_ = self.create_timer(timer_period, self.timer_callback)
 
-        #Creating Subscribers
+        # Creating Subscribers
         self._jointStates_subscription = self.create_subscription(
             JointState,
             '/joint_states',
@@ -48,7 +49,7 @@ class DeliverybotControlNode(Node):
             10
         )
 
-        #Creating Actions
+        # Creating Actions
         self._action_door_client = ActionClient(
             self, FollowJointTrajectory, '/door_position_controller/follow_joint_trajectory')
         self._action_steer_client = ActionClient(
@@ -89,7 +90,7 @@ class DeliverybotControlNode(Node):
         joint_positions = msg.position
         steer_msg = vel_msg.angular.z
 
-        self.door_pos_prev = [float(joint_positions[4])]
+        self.door_pos_prev = [float(joint_positions[5])]
         self.steer_pos_prev = [
             float(joint_positions[0]), float(joint_positions[1]), float(joint_positions[2])]
         if np.abs(np.sum(self.steer_pos_prev)) < 0.004:
@@ -102,7 +103,6 @@ class DeliverybotControlNode(Node):
         if B_button != self.B_button_prev:
             self.get_logger().info('Door Toggled.')
             self.send_door_goal()
-
 
         if vel_msg.linear.z != self.vel_msg_prev:
             self.get_logger().info('Door Toggled.')
@@ -131,15 +131,13 @@ class DeliverybotControlNode(Node):
         points = []
         point1 = JointTrajectoryPoint()
         point1.positions = self.door_pos_prev
-        
-        ### NEW ###
+
         if A_button == 1:
             door_pos = [1.5708]
         if B_button == 1:
             door_pos = [0.0]
         if A_button == 0 and B_button == 0:
             door_pos = self.door_pos_prev
-
 
         norm_coeff = np.abs(door_pos[0] - self.door_pos_prev[0]) / 1.5708
         if norm_coeff == 0:
@@ -150,7 +148,7 @@ class DeliverybotControlNode(Node):
         point2.time_from_start = Duration(
             seconds=door_time, nanoseconds=0).to_msg()
         point2.positions = door_pos
-        
+
         if point1 == point2:
             return
         points = [point1, point2]
@@ -175,6 +173,7 @@ class DeliverybotControlNode(Node):
         '''
         global vel_msg
         goal_msg = FollowJointTrajectory.Goal()
+
         # Creating timing normalizer for duration of movement
         norm_coeff = np.abs(steer_msg-self.steer_msg_prev) / 0.61085
         steer_time = norm_coeff * 0.5  # 1.5 seconds to move from straight to max turn
@@ -207,20 +206,23 @@ class DeliverybotControlNode(Node):
         goal_msg.trajectory.joint_names = [
             'front_right_steer_joint', 'front_left_steer_joint', 'center_steer_joint']
         goal_msg.trajectory.points = points
-
         self._action_steer_client.wait_for_server()
         self._send_steer_goal_future = self._action_steer_client.send_goal_async(
             goal_msg, feedback_callback=self.feedback_callback)
-
         self._send_steer_goal_future.add_done_callback(
             self.goal_response_callback)
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
-        if not goal_handle.accepted:
-            self.get_logger().info('Goal rejected :(')
-            return
-        self.get_logger().info('Goal accepted :)')
+
+        ##############################
+        #Action Server Terminal Output
+        # if not goal_handle.accepted:
+        #     self.get_logger().info('Goal rejected :(')
+        #     return                  
+        # self.get_logger().info('Goal accepted :)')
+        ###############################
+
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
 
@@ -232,7 +234,6 @@ class DeliverybotControlNode(Node):
 
 
 class JoySubscriberNode(Node):
-
     def __init__(self):
         super().__init__('joy_subscriber')
         self.subscription_ = self.create_subscription(
@@ -248,13 +249,12 @@ class JoySubscriberNode(Node):
         global A_button
         global B_button
         vel_msg.linear.x = data.axes[1]*5
-        #vel_msg.linear.y = data.axes[0]*7.5
         vel_msg.angular.z = data.axes[3]*0.610865
         A_button = data.buttons[0]
         B_button = data.buttons[1]
 
-class CmdVelSubscriberNode(Node):
 
+class CmdVelSubscriberNode(Node):
     def __init__(self):
         super().__init__('cmd_vel_subscriber')
         self.cmdVel_subscription_ = self.create_subscription(
@@ -266,6 +266,7 @@ class CmdVelSubscriberNode(Node):
     def cmdVel_callback(self, data):
         global vel_msg
         vel_msg = data
+
 
 def main(args=None):
     rclpy.init(args=None)
@@ -291,7 +292,6 @@ def main(args=None):
 
     rclpy.shutdown()
     executor_thread.join()
-
 
 if __name__ == '__main__':
     main()
