@@ -1,0 +1,185 @@
+controller_server:
+  ros__parameters:
+    use_sim_time: True
+    controller_frequency: 20.0
+    min_x_velocity_threshold: 0.001
+    min_y_velocity_threshold: 0.5
+    min_theta_velocity_threshold: 0.001
+    progress_checker_plugin: "progress_checker"
+    goal_checker_plugins: ["goal_checker"]
+    controller_plugins: ["FollowPath"]
+
+    progress_checker:
+      plugin: "nav2_controller::SimpleProgressChecker"
+      required_movement_radius: 0.75
+      movement_time_allowance: 10.0
+    goal_checker:
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.25
+      yaw_goal_tolerance: 0.25
+      stateful: True
+    FollowPath:
+      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      desired_linear_vel: 1.5
+      lookahead_dist: 0.75
+      min_lookahead_dist: 0.4
+      max_lookahead_dist: 1.1
+      lookahead_time: 1.5
+      rotate_to_heading_angular_vel: 1.8
+      transform_tolerance: 0.1
+      use_velocity_scaled_lookahead_dist: false
+      min_approach_linear_velocity: 0.05
+      approach_velocity_scaling_dist: 0.6
+      use_collision_detection: true
+      max_allowed_time_to_collision_up_to_carrot: 1.0
+      use_regulated_linear_velocity_scaling: true
+      use_fixed_curvature_lookahead: false
+      curvature_lookahead_dist: 0.25
+      use_cost_regulated_linear_velocity_scaling: false
+      regulated_linear_scaling_min_radius: 1.5
+      regulated_linear_scaling_min_speed: 0.25
+      use_rotate_to_heading: false #ROTATE TO HEADING 
+      allow_reversing: true
+      rotate_to_heading_min_angle: 0.785 #ROTATE TO HEADING NEEDED
+      max_angular_accel: 3.2
+      max_robot_pose_search_dist: 10.0
+      use_interpolation: false
+      cost_scaling_dist: 0.3
+      cost_scaling_gain: 1.0
+      inflation_cost_scaling_factor: 3.0
+
+
+local_costmap:
+  local_costmap:
+    ros__parameters:
+      update_frequency: 5.0
+      publish_frequency: 2.0
+      global_frame: odom
+      robot_base_frame: base_footprint
+      use_sim_time: True
+      rolling_window: true
+      width: 3
+      height: 3
+      resolution: 0.05
+      robot_radius: 0.22
+      plugins: ["voxel_layer", "inflation_layer", "static_layer"]
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55
+      voxel_layer:
+        plugin: "nav2_costmap_2d::VoxelLayer"
+        enabled: True
+        publish_voxel_map: True
+        origin_z: 0.0
+        z_resolution: 0.05
+        z_voxels: 16
+        max_obstacle_height: 2.0
+        mark_threshold: 0
+        observation_sources: scan #pointcloud_front pointcloud_rear
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+        # pointcloud_front:
+        #   topic: /d430/front_depth_camera/points
+        #   data_type: "PointCloud2"
+        #   max_obstacle_height: 2.0
+        #   clearing: True
+        #   marking: True
+        # pointcloud_rear:
+        #   topic: /d430/rear_depth_camera/points
+        #   data_type: "PointCloud2"
+        #   max_obstacle_height: 2.0
+        #   clearing: True
+        #   marking: True
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      always_send_full_costmap: True
+
+global_costmap:
+  global_costmap:
+    ros__parameters:
+      update_frequency: 1.0
+      publish_frequency: 1.0
+      global_frame: map
+      robot_base_frame: base_footprint
+      use_sim_time: True
+      robot_radius: 0.22
+      resolution: 0.05
+      track_unknown_space: true
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        observation_sources: scan pointcloud_front pointcloud_rear
+        scan:
+          topic: /scan
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          data_type: "LaserScan"
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.0
+        pointcloud_front:
+          topic: /d430/front_depth_camera/points
+          data_type: "PointCloud2"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.012
+        pointcloud_rear:
+          topic: /d430/rear_depth_camera/points
+          data_type: "PointCloud2"
+          max_obstacle_height: 2.0
+          clearing: True
+          marking: True
+          raytrace_max_range: 3.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 2.5
+          obstacle_min_range: 0.012
+      static_layer:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+      inflation_layer:
+        plugin: "nav2_costmap_2d::InflationLayer"
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55
+      always_send_full_costmap: True
+waypoint_follower:
+  ros__parameters:
+    use_sim_time: True
+    loop_rate: 20
+    stop_on_failure: false
+    waypoint_task_executor_plugin: "wait_at_waypoint"
+    wait_at_waypoint:
+      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      enabled: True
+      waypoint_pause_duration: 200
+
+velocity_smoother:
+  ros__parameters:
+    use_sim_time: True
+    smoothing_frequency: 20.0
+    scale_velocities: False
+    feedback: "OPEN_LOOP"
+    max_velocity: [1.0, 0.0, 1.0]
+    min_velocity: [-0.75, 0.0, -1.0]
+    max_accel: [2.5, 0.0, 3.2]
+    max_decel: [-2.5, 0.0, -3.2]
+    odom_topic: "odom"
+    odom_duration: 0.1
+    deadband_velocity: [0.0, 0.0, 0.0]
+    velocity_timeout: 1.0

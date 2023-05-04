@@ -5,8 +5,7 @@
     <xacro:property name="steer_velocity"
         value="0.5" />
     <xacro:property name="steer_limit_deg" value="35.0" />
-    <xacro:macro
-        name="front_wheel_lr"
+    <xacro:macro name="front_wheel_lr"
         params="
         name
         parent
@@ -21,8 +20,7 @@
         base_width
         axle_length_offset
         axle_width_offset
-        steer_height
-        model_rotate">
+        steer_height">
 
         <link name="${name}_steer_link">
             <inertial>
@@ -40,7 +38,7 @@
             <parent link="${parent}_link" />
             <child link="${name}_steer_link" />
             <origin
-                xyz="${reflect*(base_width/2)} ${base_length/2-axle_length_offset} ${-0.345}"
+                xyz="${base_length/2-axle_length_offset} ${reflect*(base_width/2)} ${-0.345}"
                 rpy="0 0 0" />
             <axis xyz="0 0 1" />
             <limit effort="${steer_effort}"
@@ -50,14 +48,14 @@
         </joint>
         <link name="${name}_wheel_link">
             <visual>
-                <origin xyz="0 0 0" rpy="0 ${model_rotate} 0" />
+                <origin xyz="0 0 0" rpy="0 0 ${reflect * -pi/2}" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 ${model_rotate} 0" />
+                <origin xyz="0 0 0" rpy="0 0 ${reflect * -pi/2}" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
@@ -80,8 +78,8 @@
         <joint name="${name}_wheel_joint" type="continuous">
             <parent link="${name}_steer_link" />
             <child link="${name}_wheel_link" />
-            <origin xyz="${reflect * (wheel_thickness)} 0 0" rpy="${-90 * deg_to_rad} ${-pi} 0" />
-            <axis xyz="1 0 0" />
+            <origin xyz="0 ${reflect * (wheel_thickness)} 0" rpy="0 0 0" />
+            <axis xyz="0 1 0" />
         </joint>
         <gazebo reference="${name}_steer_link">
             <mu1 value="2.0" />
@@ -100,8 +98,7 @@
         </gazebo>
     </xacro:macro>
     <!-- Rear Wheel Links -->
-    <xacro:macro
-        name="rear_wheel_lr"
+    <xacro:macro name="rear_wheel_lr"
         params="
         name
         parent
@@ -109,21 +106,20 @@
         wheel_radius
         wheel_thickness
         wheel_mass
-        model_rotate
         base_length
         base_width
         axle_length_offset
         axle_width_offset">
         <link name="${name}_wheel_link">
             <visual>
-                <origin xyz="0 0 0" rpy="0 ${model_rotate} 0" />
+                <origin xyz="0 0 0" rpy="0 0 ${reflect * -pi/2}" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 ${model_rotate} 0" />
+                <origin xyz="0 0 0" rpy="0 0 ${reflect * -pi/2}" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Wheel.dae" />
@@ -138,7 +134,7 @@
                 </surface>
             </collision>
             <inertial>
-                <origin xyz="0 0 0" rpy="0 ${model_rotate} 0" />
+                <origin xyz="0 0 0" rpy="0 0 ${reflect * -pi/2}" />
                 <mass value="3.512" />
                 <inertia ixx="0.02665" ixy="0" ixz="0" iyy="0.0148" iyz="0" izz="0.01479" />
             </inertial>
@@ -148,9 +144,9 @@
             <parent link="${parent}_link" />
             <child link="${name}_wheel_link" />
             <origin
-                xyz="${reflect*(base_width/2 + wheel_thickness)} ${-(base_length/2-axle_length_offset)} ${-0.345}"
-                rpy="${-90 * deg_to_rad} ${-pi} 0" />
-            <axis xyz="1 0 0" />
+                xyz="${-(base_length/2-axle_length_offset)} ${reflect*(base_width/2 + wheel_thickness)} ${-0.345}"
+                rpy="0 0 0" />
+            <axis xyz="0 1 0" />
         </joint>
         <gazebo reference="${name}_wheel_link">
             <mu1 value="2.0" />
@@ -170,10 +166,10 @@
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
                 </geometry>
-                <origin rpy="0 0 0" xyz="-0.002550 0.400 0.01750" />
+                <origin rpy="0 0 ${-pi/2}" xyz="0.400 -0.002550 0.01750" />
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.002550 0.400 0.01750" />
+                <origin rpy="0 0 ${-pi/2}" xyz="0.400 -0.002550 0.01750" />
                 <geometry>
                     <mesh
                         filename="package://deliverybot_description/models/deliverybot/meshes/EVA_Lid.dae" />
@@ -187,10 +183,10 @@
         </link>
         <joint name="${name}_joint" type="revolute">
             <limit lower="0" upper="1.5708" effort="100" velocity="0.5" />
-            <origin rpy="0 0 0" xyz="0 -0.415 0.35250" />
+            <origin rpy="0 0 0" xyz="-0.415 0 0.35250" />
             <parent link="${parent}_link" />
             <child link="${name}_link" />
-            <axis xyz="1 0 0" rpy="0 0 0" />
+            <axis xyz="0 1 0" rpy="0 0 0" />
         </joint>
     </xacro:macro>
 </robot>

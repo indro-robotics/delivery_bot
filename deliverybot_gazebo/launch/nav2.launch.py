@@ -92,12 +92,12 @@ def generate_launch_description():
                 ]
             ),
             "use_sim_time:=True",
+            str("params_file:=" + str(os.path.join(pkg_deliverybot_control, 'config', 'nav2.yaml')))
         ],
         output="screen"
 
     )
 
-    ld.add_action(nav2_params_file)
     ld.add_action(nav2_bringup_launch)
     ld.add_action(robot_state_publisher_node)
     ld.add_action(spawn_deliverybot_node)

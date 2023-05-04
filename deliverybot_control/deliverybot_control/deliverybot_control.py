@@ -15,6 +15,7 @@ from sensor_msgs.msg import JointState
 
 
 vel_msg = Twist()
+joy_msg = Twist()
 A_button = 0
 B_button = 0
 
@@ -73,26 +74,41 @@ class DeliverybotControlNode(Node):
 
     def timer_callback(self):
         global vel_msg
+        global joy_msg
 
-        sign = np.sign(vel_msg.linear.x)
+        if joy_msg.linear.x != 0 or joy_msg.angular.z != 0:
+            self.vel[0] = joy_msg.linear.x
+            self.vel[1] = joy_msg.linear.x
+            self.vel[2] = joy_msg.linear.x
+            self.vel[3] = joy_msg.linear.x
 
-        self.vel[0] = vel_msg.linear.x
-        self.vel[1] = vel_msg.linear.x
-        self.vel[2] = vel_msg.linear.x
-        self.vel[3] = vel_msg.linear.x
-        vel_array = Float64MultiArray(data=self.vel)
+            vel_array = Float64MultiArray(data=self.vel)
+            self.pub_vel_.publish(vel_array)
+            self.vel[:] = 0
+        else:
+            self.vel[0] = vel_msg.linear.x
+            self.vel[1] = vel_msg.linear.x
+            self.vel[2] = vel_msg.linear.x
+            self.vel[3] = vel_msg.linear.x
+            vel_array = Float64MultiArray(data=self.vel)
 
-        self.pub_vel_.publish(vel_array)
-        self.vel[:] = 0
+            self.pub_vel_.publish(vel_array)
+            self.vel[:] = 0
 
     def jointStates_callback(self, msg):
         global vel_msg
+        global joy_msg
         joint_positions = msg.position
-        steer_msg = vel_msg.angular.z
 
-        self.door_pos_prev = [float(joint_positions[5])]
+        if joy_msg.linear.x != 0 or joy_msg.angular.z != 0:
+            steer_msg = joy_msg.angular.z
+        else:
+            steer_msg = vel_msg.angular.z
+        #steer_msg = vel_msg.angular.z
+
+        self.door_pos_prev = [float(joint_positions[7])]
         self.steer_pos_prev = [
-            float(joint_positions[0]), float(joint_positions[1]), float(joint_positions[2])]
+            float(joint_positions[0]), float(joint_positions[2]), float(joint_positions[1])] # FR, FL, CENT
         if np.abs(np.sum(self.steer_pos_prev)) < 0.004:
             self.steer_pos_prev = [0.0, 0.0, 0.0]
 
@@ -171,7 +187,6 @@ class DeliverybotControlNode(Node):
         :requires: cmd_vel topic - listens to cmd_vel.angular.z message for steering control
         :returns: nothing - calls on action server
         '''
-        global vel_msg
         goal_msg = FollowJointTrajectory.Goal()
 
         # Creating timing normalizer for duration of movement
@@ -267,18 +282,32 @@ class CmdVelSubscriberNode(Node):
         global vel_msg
         vel_msg = data
 
+class CmdVelNavSubscriberNode(Node):
+    def __init__(self):
+        super().__init__('cmd_vel_nav_subscriber')
+        self.cmdVel_subscription_ = self.create_subscription(
+            Twist,
+            'cmd_vel_nav',
+            self.cmdVel_callback,
+            10)
+
+    def cmdVel_callback(self, data):
+        global vel_msg
+        vel_msg = data
 
 def main(args=None):
     rclpy.init(args=None)
 
     deliverybotControl = DeliverybotControlNode()
-    cmdVelSubscriber = CmdVelSubscriberNode()
+    #cmdVelSubscriber = CmdVelSubscriberNode()
     joySubscriber = JoySubscriberNode()
+    cmdVelNavSubscriber = CmdVelNavSubscriberNode()
 
     executor = rclpy.executors.MultiThreadedExecutor()
     executor.add_node(deliverybotControl)
-    executor.add_node(cmdVelSubscriber)
+    #executor.add_node(cmdVelSubscriber)
     executor.add_node(joySubscriber)
+    executor.add_node(cmdVelNavSubscriber)
 
     executor_thread = threading.Thread(target=executor.spin, daemon=True)
     executor_thread.start()
