@@ -10,6 +10,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, TextSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.conditions import IfCondition, UnlessCondition
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
@@ -23,6 +25,11 @@ def generate_launch_description():
 
     sim_time = DeclareLaunchArgument(
         'use_sim_time', default_value='true')
+            # Declaring Arguments and Configurations
+    teleop_only = LaunchConfiguration('teleop_only')
+
+    teleop_arg = DeclareLaunchArgument(
+        'teleop_only', default_value='false', description='Launching simulation in teleop only mode')
     
     spawn_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -60,8 +67,20 @@ def generate_launch_description():
         output='screen',
     )
 
+    # Launching Simulation Type
+    slam_simulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_gazebo, '/launch/nav2.launch.py']),
+        condition=UnlessCondition(teleop_only)
+    )
+    teleop_simulation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [pkg_deliverybot_gazebo, '/launch/teleop.launch.py']),
+        condition=IfCondition(teleop_only)
+    )
     #Adding arguments
     ld.add_action(sim_time)
+    ld.add_action(teleop_arg)
     # Launching Gazebo Server
     ld.add_action(gzserver_launch)
     # Launching Gazebo Client
@@ -70,5 +89,8 @@ def generate_launch_description():
     ld.add_action(spawn_robot)
     #Launching control node
     ld.add_action(robot_control_node)
+    #Simulation
+    ld.add_action(slam_simulation_launch)
+    ld.add_action(teleop_simulation_launch)
 
     return ld

@@ -149,7 +149,7 @@ class DeliverybotControlNode(Node):
         point1.positions = self.door_pos_prev
 
         if A_button == 1:
-            door_pos = [1.5708]
+            door_pos = [-1.5708]
         if B_button == 1:
             door_pos = [0.0]
         if A_button == 0 and B_button == 0:

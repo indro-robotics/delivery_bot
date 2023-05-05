@@ -197,6 +197,6 @@
         <xacro:door_control
             name="door"
             door_limlow="${0 * deg_to_rad}"
-            door_limhigh="${90 * deg_to_rad}" />
+            door_limhigh="${-90 * deg_to_rad}" />
     </ros2_control>
 </robot>

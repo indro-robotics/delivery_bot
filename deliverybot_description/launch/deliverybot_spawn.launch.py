@@ -6,11 +6,8 @@ import sys
 from ament_index_python.packages import get_package_share_directory
 from ament_index_python.packages import get_package_prefix
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch_ros.actions import Node
-from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+
 
 
 def generate_launch_description():
@@ -33,24 +30,6 @@ def generate_launch_description():
 
     # Creating Launch Description
     ld = LaunchDescription()
-
-    # Declaring Arguments and Configurations
-    teleop_only = LaunchConfiguration('teleop_only')
-
-    teleop_arg = DeclareLaunchArgument(
-        'teleop_only', default_value='false', description='Launching simulation in teleop only mode')
-
-    # Launching Simulation Type
-    slam_simulation_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [pkg_deliverybot_gazebo, '/launch/nav2.launch.py']),
-        condition=UnlessCondition(teleop_only)
-    )
-    teleop_simulation_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [pkg_deliverybot_gazebo, '/launch/teleop.launch.py']),
-        condition=IfCondition(teleop_only)
-    )
 
     # Launching Joystick Node
     joy_node = Node(
@@ -84,14 +63,6 @@ def generate_launch_description():
         arguments=["door_position_controller",
                    "--controller-manager", "/controller_manager"],
     )
-
-    # Arguments
-    ld.add_action(teleop_arg)
-
-    # Simulation Type
-    ld.add_action(slam_simulation_launch)
-    ld.add_action(teleop_simulation_launch)
-
     # Joystick Node
     ld.add_action(joy_node)
 
