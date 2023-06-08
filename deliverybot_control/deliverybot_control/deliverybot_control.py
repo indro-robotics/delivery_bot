@@ -62,7 +62,7 @@ class DeliverybotControlNode(Node):
         :param delta_ack: goal steering angle of virtual center wheel
         :return: ackermann steering angle of outer wheel theta_out
         """
-        return float(math.atan((self.base_length*math.atan(delta_ack))/(self.base_length + 0.5*self.base_width*math.atan(delta_ack))))
+        return float(math.atan((self.base_length*math.tan(delta_ack))/(self.base_length + 0.5*self.base_width*math.tan(delta_ack))))
 
     def theta_in(self, delta_ack):
         """
@@ -70,7 +70,7 @@ class DeliverybotControlNode(Node):
         :param delta_ack: goal steering angle of virtual center wheel
         :return: ackermann steering angle of inner wheel theta_out
         """
-        return float(math.atan((self.base_length*math.atan(delta_ack))/(self.base_length - 0.5*self.base_width*math.atan(delta_ack))))
+        return float(math.atan((self.base_length*math.tan(delta_ack))/(self.base_length - 0.5*self.base_width*math.tan(delta_ack))))
 
     def timer_callback(self):
         global vel_msg
