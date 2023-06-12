@@ -43,6 +43,7 @@
     <xacro:property name="axle_length_offset" value="0.125" />
     <xacro:property name="axle_width_offset" value="0.1" />
     <xacro:property name="steer_offset" value="-0.15" />
+
     <!-- Dummy Link -->
     <link name="base_footprint">
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -67,7 +68,7 @@
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 ${-pi/2}" />
             <mass value="64.3" />
-            <inertia ixx="8.303" ixy="0" ixz="0" iyy="5.468" iyz="0.075" izz="6.02" />
+            <inertia ixx="8.303" ixy="0" ixz="0" iyy="5.468" iyz="0.00" izz="6.02" />
         </inertial>
     </link>
     <!-- Dummy Joint -->
